@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Styrene A';
+  src: url('/fonts/StyreneA-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Styrene A';
+  src: url('/fonts/StyreneA-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Styrene A';
+  src: url('/fonts/StyreneA-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+
+@font-face {
+  font-family: 'Tiempos Text';
+  src: url('/fonts/TiemposText-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tiempos Text';
+  src: url('/fonts/TiemposText-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tiempos Text';
+  src: url('/fonts/TiemposText-MediumItalic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Tiempos Text';
+  src: url('/fonts/TiemposText-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tiempos Text';
+  src: url('/fonts/TiemposText-SemiboldItalic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Tiempos Text';
+  src: url('/fonts/TiemposText-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tiempos Text';
+  src: url('/fonts/TiemposText-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+body{
+  scrollbar-color: #5e5d59cc transparent;
+}
+
+.tiempos-font {
+  font-family: 'Tiempos Text', serif;
+}
+
+.tiempos-font-medium {
+  font-family: 'Tiempos Text', serif;
+  font-weight: 500;
+}
+
+.tiempos-font-semibold {
+  font-family: 'Tiempos Text', serif;
+  font-weight: 600;
+}
+
+.tiempos-font-bold {
+  font-family: 'Tiempos Text', serif;
+  font-weight: 700;
+}
+
+.tiempos-font-italic {
+  font-family: 'Tiempos Text', serif;
+  font-style: italic;
+}
+
+.tiempos-font-medium-italic {
+  font-family: 'Tiempos Text', serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.tiempos-font-semibold-italic {
+  font-family: 'Tiempos Text', serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.styrene-font {
+  font-family: 'Styrene A', serif;
+}
+
+.styrene-font-medium {
+  font-family: 'Styrene A', serif;
+  font-weight: 500;
+}
+
+.styrene-font-bold {
+  font-family: 'Styrene A', serif;
+  font-weight: 700;
+}
+
+.menu-shadow {
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,.1),0 0 20px rgba(0,0,0,.05), 0 1px 5px rgba(0,0,0,.1);
+}
+
+
