@@ -130,4 +130,34 @@ body{
   box-shadow: 0 0 0 0.5px rgba(0,0,0,.1),0 0 20px rgba(0,0,0,.05), 0 1px 5px rgba(0,0,0,.1);
 }
 
+.bg-000 {
+  background-color: #141413;
+}
 
+.bg-100 {
+  background-color: #262624;
+}
+
+.bg-200 {
+  background-color: #1f1e1d;
+}
+
+.bg-300 {
+  background-color: #141413;
+}
+
+.bg-400 {
+  background-color: #0f0f0e;
+}
+
+.text-100 {
+  color: #faf9f5;
+}
+
+.text-200 {
+  color: #c2c0b6;
+}
+
+.text-300 {
+  color: #c2c0b6;
+}

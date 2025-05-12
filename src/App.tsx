@@ -1,91 +1,238 @@
-import React, { useState } from 'react';
-import { Star, ChevronDown, ThumbsUp, Settings, Paperclip, PenLine, ThumbsDown, Clipboard, RotateCcw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, ChevronDown, ThumbsUp, Settings, Paperclip, PenLine, ThumbsDown, Clipboard, RotateCcw, Plus, Sidebar, Check } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 // Mock data for chats
+// Anthropic showcase chats – grounded in my real experience
 const initialChats = [
+  /* 1 ─ MISSION FIT & MOTIVATION */
   {
     id: 1,
-    title: 'Soldering Header Pins on MAX98357A I2S Amp',
+    title: 'Why Anthropic, Why Me?',
     messages: [
       {
         id: 1,
         sender: 'user',
-        content: 'I am soldering header pins onto a max 98357A i2s amp, what temperature should I set my soldering iron to?',
+        content:
+          'What draws you to Anthropic and how does our mission resonate with your own goals as a product designer?',
       },
       {
         id: 2,
         sender: 'assistant',
-        content: `For soldering header pins onto the MAX98357A I2S amplifier, I'd recommend setting your soldering iron between 315-340°C (600-650°F). This temperature range is suitable for lead-free solder, which is most commonly used today, while still being low enough to avoid damaging the board or components.
+        content: `I've spent nights and weekends hacking on AI side‑projects, so two things about Anthropic hit home:
 
-A few tips:
-• Make sure your soldering iron tip is clean and properly tinned
-• Don't hold the iron on the pins/pads for more than 2-3 seconds
-• If the solder isn't flowing well at 315°C, you can gradually increase the temperature
-• Let each joint cool completely before moving the board
+1. **Useful models for builders.** 
 
-Would you like any specific advice about soldering technique for these header pins?`,
-      },
-      {
-        id: 3,
-        sender: 'user',
-        content: 'I am soldering header pins onto a max 98357A i2s amp, what temperature should I set my soldering iron to?',
-      },
-      {
-        id: 4,
-        sender: 'assistant',
-        content: `For soldering header pins onto the MAX98357A I2S amplifier, I'd recommend setting your soldering iron between 315-340°C (600-650°F). This temperature range is suitable for lead-free solder, which is most commonly used today, while still being low enough to avoid damaging the board or components.
+Claude's coding chops powered *all* of my recent prototypes—from React component generators to Go APIs—cutting exploration time in half.  As a self‑taught developer, that "assistant‑as‑pair‑programmer" experience is magic I want to refine for millions of other makers.
 
-A few tips:
-• Make sure your soldering iron tip is clean and properly tinned
-• Don't hold the iron on the pins/pads for more than 2-3 seconds
-• If the solder isn't flowing well at 315°C, you can gradually increase the temperature
-• Let each joint cool completely before moving the board
+2. **Safety baked in.**
 
-Would you like any specific advice about soldering technique for these header pins?`,
+I admire that you ship research *and* red‑team methods in the same breath.  At GoDaddy, I help embed accessibility and privacy guardrails inside our design system; Anthropic does the same for AI alignment.  Designing products where safety is a first‑class constraint feels like the natural next step in my career.`,
       },
     ],
   },
+
+  /* 2 ─ DESIGN‑SYSTEM IMPACT @ GODADDY */
   {
     id: 2,
-    title: 'Connecting a Micro Switch',
+    title: 'Evolving GoDaddy\'s Design System for AI',
     messages: [
       {
         id: 1,
         sender: 'user',
-        content: 'How do I wire a micro switch to an Arduino?',
+        content:
+          'Tell me about your design‑system work—especially anything that supported AI features.',
       },
       {
         id: 2,
         sender: 'assistant',
-        content: 'To connect a micro switch to an Arduino, you\'ll need to use a digital input pin and implement pull-up resistors. Would you like a detailed wiring diagram?',
+        content: `**Role.**  Senior Product Designer on the Elevation Design System.
+
+**Key contributions**
+
+* **AI‑ready iconography.**  Led the creation of a 280‑glyph icon set (streamlined states, "sparkle/bolt" metaphors, content‑safety marks) now used in every generative‑AI flow across the company.
+* **Token pipeline upgrade.**  Added semantic "tone" tokens (positive, caution, destructive) so teams could theme safety warnings without bespoke CSS.  
+* **Adoption results.**
+  * 34 product squads migrated within 6 mo.  
+  * >12 K icons served per build via a single sprite sheet (‑15 % bundle size).  
+  * Time from Figma approve → production drop‑in shrank from ~3 days to <1 day.
+
+I didn't own the AI roadmap, but my system work became the substrate that unlocked it—perfect practice for supporting Anthropic's rapid research‑to‑product pipeline.`,
       },
     ],
   },
+
+  /* 3 ─ AI PRODUCT CRAFT (SIDE PROJECTS) */
   {
     id: 3,
-    title: 'Simple Audio Tester',
+    title: 'Prototyping Conversational AI Products',
     messages: [
       {
         id: 1,
         sender: 'user',
-        content: 'What components do I need for a basic audio signal tester?',
+        content:
+          'Walk me through something you\'ve built on your own that shows product thinking with AI.',
       },
       {
         id: 2,
         sender: 'assistant',
-        content: 'For a basic audio signal tester, you\'ll need an op-amp, some resistors, and a few capacitors. Let me help you design a simple circuit.',
+        content: `### 1. superbuild.app  
+A chat‑driven site builder with everyday "helper" personas (e.g., Copywriter, SEO Buddy, Color‑Palette Coach).
+
+* **Pain point.**  New founders drown in UI complexity.  
+* **Solution.**  One chat thread = one website state.  Users can *fork* a thread, compare diffs, then merge—Git concepts, zero jargon.  
+* **Outcome.**  50 alpha users; 83 % preferred it over template wizards; two early users launched live marketing sites in under an hour.
+
+### 2. lifeadventure.rsdaly.com  
+A year‑by‑year life simulator where Claude generates dilemmas, tracks stats (happiness, health, intelligence), and surfaces new choices.
+
+* **Design twist.**  I visualised stats as emoji "heartbeats" to keep the UI playful while decisions get serious.  
+* **Tech.**  Next‑JS front‑end, SQLite, and Claude function‑calling for stat bookkeeping.
+
+Both projects prove I can turn raw model capabilities into approachable interfaces—exactly the skillset you need as context windows and tool‑use explode.`,
+      },
+    ],
+  },
+
+  /* 4 ─ CROSS‑FUNCTIONAL COLLABORATION */
+  {
+    id: 4,
+    title: 'Working Across Research, PM & Engineering',
+    messages: [
+      {
+        id: 1,
+        sender: 'user',
+        content:
+          'Great design rarely happens in isolation.  How do you partner with other functions?',
+      },
+      {
+        id: 2,
+        sender: 'assistant',
+        content: `* **Design ↔ Dev translator.**  Because I code (React, Go), I prototype in the repo—not just Figma.  Engineers trust my redlines because they compile.
+* **Rapid research loops.**  Pair with UXR to cut five‑day synth cycles to one day; we co‑author Airtable playbooks so findings feed straight into token decisions.
+* **Show‑don't‑tell storytelling.**  Loom walk‑throughs beat slide decks; keeps exec updates under 5 minutes and frees teams for async critique.
+
+Result: instead of "throwing designs over the wall," we ship cohesive AI features—like in‑product headline generators—two sprints faster than before.`,
+      },
+    ],
+  },
+
+  /* 5 ─ ETHICS & TRUST BY DESIGN */
+  {
+    id: 5,
+    title: 'Building for Safety & Transparency',
+    messages: [
+      {
+        id: 1,
+        sender: 'user',
+        content:
+          'Anthropic puts safety first.  How does that mindset appear in your day‑to‑day design practice?',
+      },
+      {
+        id: 2,
+        sender: 'assistant',
+        content: `**Guardrails checklist (used in every AI flow I touch):**
+
+1. **Disclosure first.**  Up‑front explanation of model use + data retention.  
+2. **Progressive friction.**  Tooltip → confirmation → block, depending on risk.  
+3. **Bias auditing.**  Red‑team prompts stored in Git; design reviews include a "bias diff" checkpoint.  
+4. **A11y parity.**  Screen‑reader‑safe and high‑contrast variants for every AI component.
+
+I'm eager to learn Anthropic's constitutional approach and help translate those principles into UI patterns the industry can copy.`,
+      },
+    ],
+  },
+
+  /* 6 ─ CONTINUOUS LEARNING & FUTURE GOALS */
+  {
+    id: 6,
+    title: 'Where I\'m Growing Next',
+    messages: [
+      {
+        id: 1,
+        sender: 'user',
+        content:
+          'What skills are you most excited to level‑up at Anthropic?',
+      },
+      {
+        id: 2,
+        sender: 'assistant',
+        content: `* **Multimodal design.**  I've prototyped voice and text; adding vision to the loop is my next frontier.  
+* **Safety metrics.**  Want to co‑define UX telemetry that feeds back into alignment scores.  
+* **Research collaboration.**  Sitting closer to world‑class ML scientists will sharpen my hypothesis‑to‑UI pipeline.
+
+Bring me in and you'll get a designer who ships code, sweats systems, and treats safety as a non‑negotiable—not an afterthought.`,
       },
     ],
   },
 ];
 
+
 function App() {
   const [showTitleMenu, setShowTitleMenu] = useState(false);
+  const [showModelMenu, setShowModelMenu] = useState(false);
   const [chats, setChats] = useState(initialChats);
   const [currentChat, setCurrentChat] = useState(chats[0]);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showSidebarText, setShowSidebarText] = useState(true);
+
+  // Animate text fade-out after width transition
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (sidebarCollapsed) {
+      timeout = setTimeout(() => setShowSidebarText(false), 220); // match transition duration
+    } else {
+      setShowSidebarText(true);
+    }
+    return () => clearTimeout(timeout);
+  }, [sidebarCollapsed]);
+
+  const handleSubmitMessage = () => {
+    if (!inputValue.trim()) return;
+
+    const newMessage = {
+      id: currentChat.messages.length + 1,
+      sender: 'user',
+      content: inputValue.trim()
+    };
+
+    const updatedChat = {
+      ...currentChat,
+      messages: [...currentChat.messages, newMessage]
+    };
+
+    const updatedChats = chats.map(chat => 
+      chat.id === currentChat.id ? updatedChat : chat
+    );
+
+    setChats(updatedChats);
+    setCurrentChat(updatedChat);
+    setInputValue('');
+  };
+
+  const adjustTextareaHeight = (element: HTMLTextAreaElement) => {
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight}px`;
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && e.shiftKey) {
+      // Allow the default behavior (new line)
+      return;
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmitMessage();
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+    adjustTextareaHeight(e.target);
+  };
+
   const handleRename = () => {
     setNewTitle(currentChat.title);
     setIsRenaming(true);
@@ -109,79 +256,144 @@ function App() {
     setNewTitle('');
   };
 
+  // For closing the model menu on outside click
+  useEffect(() => {
+    if (!showModelMenu) return;
+    function handleClick(e: MouseEvent) {
+      const menu = document.getElementById('model-menu');
+      const btn = document.getElementById('model-menu-btn');
+      if (menu && !menu.contains(e.target as Node) && btn && !btn.contains(e.target as Node)) {
+        setShowModelMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showModelMenu]);
+
   return (
     <div className="flex h-screen from-[#262624] to-[#30302e] bg-gradient-to-b text-gray-100 styrene-font">
       {/* Sidebar */}
-      <div className="w-[18rem] from-[#201f1e]/70 to-[#1b1a18]/70 bg-gradient-to-b border-r-[1px] border-[#5f5d59]/25 flex flex-col">
-        <div className="py-4 px-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="tiempos-font text-[#ceccc5] text-xl">Scott Daly</span>
+      <div
+        style={{ width: sidebarCollapsed ? '3rem' : '18rem', transition: 'width 0.2s cubic-bezier(0.4,0,0.2,1)' }}
+        className={
+          'bg-[#1f1e1d] border-r-[1px] border-[#5f5d59]/60 flex flex-col transition-colors duration-300 ease-in-out'
+        }
+      >
+        <div className={`py-2 px-2 flex items-center justify-between transition-all duration-300 ease-in-out`}> 
+          <div className={`flex items-center transition-all duration-300 ease-in-out pb-4`}> 
+            <button 
+              className="inline-flex items-center justify-center relative shrink-0 can-focus select-none hover:cursor-pointer disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-[#c2c0b6] border-transparent transition font-styrene duration-300 ease-[cubic-bezier(0.165,0.85,0.45,1)] hover:bg-[#0f0f0e] aria-pressed:bg-[#0f0f0e] aria-checked:bg-[#0f0f0e] aria-expanded:bg-[#141413] hover:text-[#c2c0b6] aria-pressed:text-[#c2c0b6] aria-checked:text-[#c2c0b6] aria-expanded:text-[#c2c0b6] h-8 w-8 rounded-md active:scale-95 group"
+              onClick={() => setSidebarCollapsed((v) => !v)}
+              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <div className="relative *:duration-300 ">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="shrink-0 opacity-100 scale-100 group-hover:opacity-0 group-hover:scale-80 transition-all text-[#c2c0b6]">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 3C1.67157 3 1 3.67157 1 4.5V15.5C1 16.3284 1.67157 17 2.5 17H17.5C18.3284 17 19 16.3284 19 15.5V4.5C19 3.67157 18.3284 3 17.5 3H2.5ZM2 4.5C2 4.22386 2.22386 4 2.5 4H6V16H2.5C2.22386 16 2 15.7761 2 15.5V4.5ZM7 16H17.5C17.7761 16 18 15.7761 18 15.5V4.5C18 4.22386 17.7761 4 17.5 4H7V16Z"></path>
+                </svg>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 opacity-0 scale-50 absolute inset-0 group-hover:scale-100 group-hover:opacity-100 transition-all text-[#c2c0b6] ${sidebarCollapsed ? 'rotate-180' : ''}`}>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 10C5 9.85913 5.05943 9.72479 5.16366 9.63003L10.6637 4.63003C10.868 4.44428 11.1842 4.45933 11.37 4.66366C11.5557 4.86799 11.5407 5.18422 11.3363 5.36997L6.7933 9.5L17.5 9.5C17.7761 9.5 18 9.72386 18 10C18 10.2761 17.7761 10.5 17.5 10.5L6.7933 10.5L11.3363 14.63C11.5407 14.8158 11.5557 15.132 11.37 15.3363C11.1842 15.5407 10.868 15.5557 10.6637 15.37L5.16366 10.37C5.05943 10.2752 5 10.1409 5 10Z"></path>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 2C2.77614 2 3 2.22386 3 2.5L3 17.5C3 17.7761 2.77614 18 2.5 18C2.22385 18 2 17.7761 2 17.5L2 2.5C2 2.22386 2.22386 2 2.5 2Z"></path>
+                </svg>
+                </div>
+            </button>
+            {/* Animated text/logo fade/scale */}
+            <div
+              className={`overflow-hidden transition-all duration-200 ease-in-out ml-2`}
+              
+            >
+             
+                <span className={`tiempos-font text-white text-xl h-6 select-none transition-all duration-150 ease-in-out whitespace-nowrap ${sidebarCollapsed ? 'hidden' : ''}`}>Scott Daly</span>
+              
+            </div>
           </div>
-          
         </div>
 
         {/* Sidebar Content */}
-        <div className="tracking-tight">
-          <button className="w-full text-left px-3 py-1 rounded-lg hover:bg-gray-800 flex items-center space-x-1 text-[#b6613c]">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16" className="shrink-0"><path fill="currentColor" d="M8 1.5a6.5 6.5 0 0 1 5.74 9.55l.7 2.13a1 1 0 0 1-1.26 1.27l-2.13-.71A6.5 6.5 0 1 1 8 1.5Zm0 12a5.5 5.5 0 0 0 2.75-.74.5.5 0 0 1 .41-.04l2.34.78-.78-2.34a.5.5 0 0 1 .04-.4A5.5 5.5 0 1 0 8 13.5Z"></path><path stroke="currentColor" stroke-linecap="round" d="M8 6.4v3.2M9.6 8H6.4"></path></svg>
-            <span className="text-[0.95rem]">Start new chat</span>
-          </button>
-          
-
-          <div className="mt-4">
-            <div className="px-3 py-2 text-sm text-gray-400">
-              <span className='text-[#ceccc5] styrene-font-bold'>Recents</span>
+        
+          <div className="tracking-tight mx-2 transition-opacity duration-200 ease-in-out opacity-100">
+            <div className="relative group">
+              <button className={`w-full hover:cursor-pointer text-left px-1 py-1.5 rounded-lg flex items-center space-x-1 text-[#d97757] gap-1 ${sidebarCollapsed ? '' : 'hover:bg-[#d97757]/5'}`}>
+                <div className="flex items-center space-x-1 bg-[#c96442] rounded-full p-1 group-hover:scale-105 group-hover:rotate-3 transition-all ease-in-out group-hover:shadow-md duration-150">
+                  <Plus className="w-4 h-4 text-white" />
+                </div>
+                <span className={`text-sm styrene-font-medium whitespace-nowrap transition-all duration-150 ease-in-out ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>New chat</span>
+              </button>
+              {/* Tooltip for collapsed sidebar */}
+              {sidebarCollapsed && (
+                <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 opacity-0 group-hover:opacity-100 font-medium group-hover:pointer-events-auto transition-opacity duration-150 min-w-max px-2 py-1 rounded-md bg-[#0f0f0e] text-white text-[0.7rem] shadow-md flex items-center justify-center gap-2 select-none whitespace-nowrap">
+                  New chat <span className="text-[#c2c0b6] text-[0.7rem] pt-0.5">Ctrl+K</span>
+                </div>
+              )}
             </div>
-            <div className="mt-1 space-y-0.5 px-1">
-              {chats.map((chat) => (
-                <button
-                  key={chat.id}
-                  onClick={() => setCurrentChat(chat)}
-                  className={`w-full px-2 py-1 text-sm hover:bg-[#1a1918] text-[#e5e5e2] rounded-lg cursor-pointer flex items-center space-x-2 ${
-                    currentChat.id === chat.id ? 'bg-[#1a1918]' : ''
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
-                  <span className="truncate tiempos-font">{chat.title}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="mt-auto py-2 px-3">
-          <div className="flex items-center justify-center rounded-t-md mx-2 py-1 border-t-[1px] border-r-[1px] border-l-[1px] border-[#5645a1]/50 bg-gradient-to-b from-[#6c5bb9]/0 to-[#6c5bb9]/5">
-            <span className="text-xs text-[#9b87f5]/80 tiempos-font">Professional Plan</span>
-          </div>
-          <div className="inline-flex items-center justify-center bg-[#191917]/25 hover:cursor-pointer bg-opacity-70 hover:bg-opacity-100 shrink-0 ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none border-[1px] border-[#5e5d59]/25 hover:border-[#5e5d59]/50 group relative z-[1] w-full overflow-hidden rounded-lg !px-2.5 !py-2 !text-left">
-            <div className="flex items-center w-full gap-1.5">
-              <div className="w-7 h-7 rounded-full bg-[#6c5bb9] flex items-center justify-center">
-                <span className="text-xs styrene-font-bold">SD</span>
+            {!sidebarCollapsed && showSidebarText && (
+            <div className="mt-4">
+              <div className="px-3 py-2 text-sm text-gray-400">
+                <span className='text-[#ceccc5] styrene-font text-xs'>Recents</span>
               </div>
-              <span className="min-w-0 flex-1 text-sm truncate tracking-tight">desertcitysoundtrack@gmail.com</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+              <div className="mt-1 space-y-0.5 px-1">
+                {chats.map((chat) => (
+                  <button
+                    key={chat.id}
+                    onClick={() => setCurrentChat(chat)}
+                    className={`w-full px-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
+                      currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
+                    <span className="truncate styrene-font">{chat.title}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-            
+             )}
           </div>
-        </div>
-        <div className="mt-0.5 mb-4 flex items-center justify-between px-4 tracking-tight">
-          <p className="text-xs text-[#ceccc5]">SD</p>
-          <div className="flex items-center space-x-1 hover:cursor-pointer group">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
-          <p className="text-xs text-[#ceccc5] group-hover:underline styrene-font-medium">Help & Support</p>
+       
+        
+        {/* Bottom Section */}
+        {!sidebarCollapsed && showSidebarText && (
+          <div className="mt-auto py-2 px-3 transition-opacity duration-200 ease-in-out opacity-100">
+            <div className="flex items-center justify-center rounded-t-md mx-2 py-1 border-t-[1px] border-r-[1px] border-l-[1px] border-[#5645a1]/50 bg-gradient-to-b from-[#6c5bb9]/0 to-[#6c5bb9]/5">
+              <span className="text-xs text-[#9b87f5]/80 tiempos-font">Professional Plan</span>
+            </div>
+            <div className="inline-flex items-center justify-center bg-[#191917]/25 hover:cursor-pointer bg-opacity-70 hover:bg-opacity-100 shrink-0 ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none border-[1px] border-[#5e5d59]/25 hover:border-[#5e5d59]/50 group relative z-[1] w-full overflow-hidden rounded-lg !px-2.5 !py-2 !text-left">
+              <div className="flex items-center w-full gap-1.5">
+                <div className="w-7 h-7 rounded-full bg-[#6c5bb9] flex items-center justify-center">
+                  <span className="text-xs styrene-font-bold">CL</span>
+                </div>
+                <span className="min-w-0 flex-1 text-sm truncate tracking-tight">claudeluvr99@gmail.com</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+        {!sidebarCollapsed && showSidebarText && (
+          <div className="mt-0.5 mb-4 flex items-center justify-end px-4 tracking-tight transition-opacity duration-200 ease-in-out opacity-100">
+            <div className="flex items-center space-x-1 hover:cursor-pointer group">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+              <p className="text-xs text-[#ceccc5] group-hover:underline styrene-font-medium">Help & Support</p>
+            </div>
+          </div>
+        )}
+        {sidebarCollapsed && (
+          <div className="mt-auto mb-4 flex flex-col items-center space-y-4">
+            <div className="w-8 h-8 rounded-full bg-[#6c5bb9] flex items-center justify-center">
+              <span className="text-xs styrene-font-bold">CL</span>
+            </div>
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#191917]/25 border-[1px] border-[#5e5d59]/25">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col tiempos-font text-[#f5f4ef] overflow-y-scroll">
+      <div className="flex-1 flex flex-col tiempos-font text-[#f5f4ef] overflow-y-scroll bg-[#262624]">
         {/* Header */}
-        <div className='sticky top-0 z-[8] -mb-6 flex h-14 items-center gap-3 pl-11 pr-2 md:pt-1 md:pb-0.5 md:pl-6'>
+        <div className='sticky top-0 z-[8] -mb-6 flex h-14 items-center gap-3 pl-11 md:pt-1 md:pb-0.5 md:pl-8'>
           
-        <div className="bg-gradient-to-b from-[#262624] via-[#262624] to-[#262624]/0 md:pl-6 md:pr-4 px-2  w-full z-[-1] -bottom-5 inset-0 via-50% absolute pointer-events-none"></div>
+        <div className="bg-gradient-to-b from-[#262624] via-[#262624] to-[#262624]/0 md:pl-6 md:pr-4 px-2 w-full z-[-1] -bottom-5 inset-0 via-50% absolute pointer-events-none"></div>
         <div className='flex items-center justify-between w-full'>
-          <div className="flex-1 flex relative py-4">
+          <div className="flex-1 flex relative py-2">
             {isRenaming ? (
               <form onSubmit={handleRenameSubmit} className="flex items-center space-x-2">
                 <input
@@ -207,13 +419,12 @@ function App() {
               </form>
             ) : (
               <div className='flex items-center'>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256" className="text-[#ceccc5] mr-1 mb-1.5 shrink-0 translate-y-px"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
-                
+              
               <button 
                 onClick={() => setShowTitleMenu(!showTitleMenu)}
-                className="flex items-center hover:bg-[#151514]/40 px-1 py-0.5 rounded-md ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-text-200"
+                className="flex items-center hover:cursor-pointer hover:bg-black px-1 py-0.5 rounded-md ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none"
               >
-                <span>{currentChat.title}</span>
+                <span className="truncate tracking-tight text-[0.85rem] styrene-font">{currentChat.title}</span>
                 <ChevronDown className="w-4 h-4 text-[#ceccc5]" />
               </button>
               </div>
@@ -233,19 +444,42 @@ function App() {
               </div>
             )}
           </div>
-          <div className="flex items-center space-x-4">
-            <Star className="w-5 h-5 text-gray-400" />
-            <Settings className="w-5 h-5 text-gray-400" />
+          <div className="">
+          <button className="inline-flex
+          items-center
+          justify-center
+          relative
+          shrink-0
+          can-focus
+          hover:cursor-pointer
+          select-none
+          disabled:pointer-events-none
+          disabled:opacity-50
+          disabled:shadow-none
+          disabled:drop-shadow-none text-text-300
+          border-transparent
+          transition
+          styrene-font
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)]
+          hover:bg-[#0f0f0e]
+          aria-pressed:bg-[#0f0f0e]
+          aria-checked:bg-[#0f0f0e]
+          aria-expanded:bg-[#141413]
+          hover:text-[#faf9f5]
+          aria-pressed:text-[#faf9f5]
+          aria-checked:text-[#faf9f5]
+          aria-expanded:text-[#faf9f5] h-9 px-4 py-2 rounded-lg min-w-[5rem] active:scale-[0.985] whitespace-nowrap text-sm pl-2 pr-3 gap-1 font-medium text-sm !text-[#faf9f5]" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M214,112v96a14,14,0,0,1-14,14H56a14,14,0,0,1-14-14V112A14,14,0,0,1,56,98H80a6,6,0,0,1,0,12H56a2,2,0,0,0-2,2v96a2,2,0,0,0,2,2H200a2,2,0,0,0,2-2V112a2,2,0,0,0-2-2H176a6,6,0,0,1,0-12h24A14,14,0,0,1,214,112ZM92.24,68.24,122,38.49V136a6,6,0,0,0,12,0V38.49l29.76,29.75a6,6,0,1,0,8.48-8.48l-40-40a6,6,0,0,0-8.48,0l-40,40a6,6,0,1,0,8.48,8.48Z"></path></svg>Share</button>
           </div>
         </div>
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 mt-8 pl-6 text-[#f5f4ef] md:pr-16">
-          <div className="max-w-3xl mx-auto">
+        <div className="flex-1 mt-8 pl-10 text-[#f5f4ef] md:pr-10">
+          <div className="max-w-[45rem] mx-auto">
             {currentChat.messages.map((message) => (
               <div key={message.id} className={`group relative ${
-                message.sender === 'user' ? 'mb-4 inline-flex flex-col break-words bg-gradient-to-b from-[#1f1e1d] to-[#1a1918] styrene-font max-w-[75ch] ml-px pl-2.5 py-2.5 pr-6 leading-6 rounded-xl text-[0.9375rem] shadow-[0_2px_16px_rgba(0,0,0,0.025)]' : 'mb-8 bg-gradient-to-b from-[#3C3C39]/75 to-[#30302E] pr-4 md:pr-8 leading-[1.65rem] tracking-[0.015em] pt-3.5 px-4 pb-[1.125rem] rounded-2xl border-[0.5px] border-[#5e5d59]/15 shadow-[0_4px_24px_rgba(0,0,0,0.015)]'
+                message.sender === 'user' ? 'mb-4 inline-flex flex-col break-words bg-gradient-to-b from-[#1f1e1d] to-[#1a1918] styrene-font max-w-[75ch] ml-px pl-2.5 py-2.5 pr-6 leading-6 rounded-xl text-[0.9375rem] shadow-[0_2px_16px_rgba(0,0,0,0.025)]' : 'mb-8 bg-gradient-to-b from-[#3C3C39]/75 to-[#30302E] pr-4 md:pr-8 leading-[1.65rem] tracking-[0.015em] pt-3.5 px-4 pb-[1.125rem] rounded-2xl border-[0.5px] border-[#5e5d59]/30 shadow-[0_4px_24px_rgba(0,0,0,0.015)]'
               }`}>
                 <div className="flex items-start space-x-4">
                   {message.sender === 'user' && (
@@ -256,14 +490,13 @@ function App() {
                   </div>
                   )}
                   <div className="flex-1 relative">
-                    <div className="prose prose-invert">
-                      <p className="whitespace-pre-wrap">{message.content}</p>
+                    <div className="prose prose-invert prose-p:my-2 prose-headings:my-4 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-strong:text-[#faf9f5] prose-em:text-[#faf9f5] prose-code:text-[#faf9f5] prose-code:bg-[#1f1e1d] prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
                     </div>
-                    
                   </div>
                 </div>
                 {message.sender === 'assistant' && (
-                      <div className={`absolute bottom-[-10] text-[#b8b5a9] transition-all duration-150 right-0 bg-[#3d3d3a] rounded-lg flex items-center gap-1 translate-x-2 shadow-sm border-[1px] border-[#5f5d59]/25 styrene-font text-xs p-1 ${currentChat.messages.length === (currentChat.messages.indexOf(message) + 1) ? "opacity-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"}` }>
+                      <div className={`absolute bottom-[-10] text-[#b8b5a9] transition-all duration-150 right-0 bg-[#3d3d3a] rounded-lg flex items-center gap-1 translate-x-2 shadow-sm border-[1px] border-[#5f5d59]/45 styrene-font text-xs p-1 ${currentChat.messages.length === (currentChat.messages.indexOf(message) + 1) ? "opacity-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"}` }>
                         <button className="px-1 py-0.5 rounded-md hover:bg-[#262624] flex items-center space-x-1.5 cursor-pointer">
                           <Clipboard className="w-3 h-3" />
                           <span>Copy</span>
@@ -296,39 +529,56 @@ function App() {
         </div>
 
         {/* Input Area */}
-        <div className="sticky bottom-0 mx-auto w-full pt-6 z-[5] min-w-0 md:pl-2 md:pr-12">
-          <div className="flex flex-col bg-[#3d3d3a]  gap-1.5  border-[1px]  border-[#5f5d59]/25  pl-4  pt-2.5  pr-2.5  pb-2.5  sm:mx-0  items-stretch  transition-all  duration-200  relative  shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/3.5%)]  focus-within:shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/7.5%)]  hover:border-border-200  focus-within:border-border-200  cursor-text  z-10 rounded-t-2xl border-b-0">
-            <div className="flex items-center justify-between rounded-lg">
-              <input
-                type="text"
+        <div className="sticky bottom-0 mx-auto w-full pt-6 z-[5] min-w-0 md:pl-11 md:pr-9 max-w-[52rem]">
+          <div className="flex flex-col bg-[#30302e] border border-[#dfddd3]/30 outline-[#ae5630] focus-within:border-white  pl-4  pt-2.5  pr-2.5  pb-2.5 bottom-2 sm:mx-0  items-stretch  transition-all  duration-200  relative  shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/3.5%)]  focus-within:shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/7.5%)]  hover:border-border-200  focus-within:border-border-200  cursor-text  z-10 rounded-2xl">
+            <div className="flex items-start justify-between rounded-lg">
+              <textarea
                 placeholder="Reply to Scott..."
-                className="flex-1 bg-transparent border-none focus:outline-none styrene-font py-1"
+                className="flex-1 bg-transparent border-none focus:outline-none styrene-font py-1 resize-none min-h-[24px] max-h-[200px] overflow-y-auto"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                rows={1}
               />
               <div className="flex items-center space-x-2">
                 <button className="p-2 rounded-md hover:bg-[#151514]/50 flex items-center space-x-1">
                   <Paperclip className="w-4 h-4" />
                 </button>
                 {inputValue.length > 0 && (
-                <button className="hover:cursor-pointer inline-flex items-center justify-center relative shrink-0 ring-offset-2 ring-offset-[#1f1e1d] ring-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none bg-[#ae5630] text-white font-medium font-styrene transition-colors hover:bg-[#a3512b] h-8 w-8 rounded-md active:scale-95 !rounded-xl">
+                <button 
+                  onClick={handleSubmitMessage}
+                  className="hover:cursor-pointer inline-flex items-center justify-center relative shrink-0 ring-offset-2 ring-offset-[#1f1e1d] ring-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none bg-[#ae5630] text-white font-medium font-styrene transition-colors hover:bg-[#a3512b] h-8 w-8 rounded-md active:scale-95 !rounded-xl">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208.49,120.49a12,12,0,0,1-17,0L140,69V216a12,12,0,0,1-24,0V69L64.49,120.49a12,12,0,0,1-17-17l72-72a12,12,0,0,1,17,0l72,72A12,12,0,0,1,208.49,120.49Z"></path></svg>
                 </button>
                 )}
               </div>
             </div>
             <div className="mt-2 flex items-center justify-between text-xs text-gray-400">
-              <div className="flex items-center space-x-1">
-                <button className="hover:cursor-pointer inline-flex items-center justify-center relative shrink-0 ring-offset-2 ring-offset-[#1f1e1d] ring-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none h-7 text-[#f5f4ef] text-sm transition-colors hover:bg-[#262624] border-[1px] border-transparent hover:border-[#5f5d59] opacity-80 hover:opacity-100 rounded-md ml-1.5 sm:ml-0 sm:pb-1 sm:pl-1.5 sm:pr-1 sm:pt-1">
-                  <div className="whitespace-nowrap tracking-tight text-[14px]">Claude 3.5 Sonnet</div> 
+              <div className="flex items-center space-x-1 relative">
+                <button className="hover:cursor-pointer inline-flex items-center justify-center relative shrink-0 ring-offset-2 ring-offset-[#1f1e1d] ring-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none h-7 text-[#f5f4ef] text-sm transition-colors hover:bg-[#262624] border-[1px] border-transparent hover:border-[#5f5d59] opacity-80 hover:opacity-100 rounded-md ml-1.5 sm:ml-0 sm:pb-1 sm:pl-1.5 sm:pr-1 sm:pt-1"
+                  id="model-menu-btn"
+                  type="button"
+                  onClick={() => setShowModelMenu((v) => !v)}
+                >
+                  <div className="whitespace-nowrap tracking-tight text-[14px]">Scott 3.4 Daly</div> 
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256" className="text-[#a6a39a] ml-1 shrink-0"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
-                  </button>
-                
-                <button className="hover:cursor-pointer inline-flex items-center justify-center relative shrink-0 ring-offset-2 ring-offset-[#1f1e1d] ring-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none h-7 text-[#a6a39a] gap-1 text-sm transition-colors hover:bg-[#262624] border-[1px] border-transparent hover:border-[#5f5d59] opacity-80 hover:opacity-100 rounded-md ml-1.5 sm:ml-0 sm:pb-1 sm:pl-1.5 sm:pr-1 sm:pt-1">
-                  <PenLine className="w-4 h-4" />
-                  <div className="whitespace-nowrap tracking-tight text-[14px]">Choose style</div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256" className="text-[#a6a39a] ml-px shrink-0"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
                 </button>
+                {showModelMenu && (
+                  <div id="model-menu" className="absolute left-0 bottom-full mb-2 min-w-[220px] w-[280px] bg-[#30302e] border border-[#5f5d59]/25 rounded-xl shadow-lg z-50 p-1 menu-shadow">
+                    <button
+                      className="w-full flex flex-col items-start px-4 py-2 rounded-lg hover:bg-[#191917] transition-colors text-left styrene-font hover:cursor-pointer"
+                      onClick={() => setShowModelMenu(false)}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex flex-col space-x-2">
+                          <span className="font-medium text-[15px] text-[#c2c0b6]">Scott 3.4 Daly</span>   
+                          <div className="text-xs text-[#b8b5a9] mt-0.5">Our most intelligent model yet</div>
+                        </div>
+                        <Check className="w-4 h-4 text-[#2c84db]" />
+                      </div>
+                    </button>
+                  </div>
+                )}
               </div>
               {inputValue.length > 4 && (
                 <div className="flex items-center text-xs text-[#b8b5a9] styrene-font tracking-tight leading-[0.975rem]"><div className="max-md:hidden">Use <div className="bg-[#262624] inline-flex rounded-md px-1">shift + return</div> for new line</div></div>
