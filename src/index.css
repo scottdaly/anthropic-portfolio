@@ -76,6 +76,10 @@ body{
   scrollbar-color: #5e5d59cc transparent;
 }
 
+button {
+  cursor: pointer;
+}
+
 .tiempos-font {
   font-family: 'Tiempos Text', serif;
 }
@@ -131,7 +135,7 @@ body{
 }
 
 .bg-000 {
-  background-color: #141413;
+  background-color: #30302e;
 }
 
 .bg-100 {

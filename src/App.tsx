@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Star, ChevronDown, ThumbsUp, Settings, Paperclip, PenLine, ThumbsDown, Clipboard, RotateCcw, Plus, Sidebar, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Star, ChevronDown, ThumbsUp, Settings, Paperclip, PenLine, ThumbsDown, Clipboard, RotateCcw, Plus, Sidebar, Check, Copy, Link, HelpCircle, InfoIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 // Mock data for chats
@@ -178,6 +178,13 @@ function App() {
   const [inputValue, setInputValue] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showSidebarText, setShowSidebarText] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const shareLinkRef = useRef<HTMLInputElement>(null);
+  const shareModalContentRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+  const titleMenuRef = useRef<HTMLDivElement>(null);
+  const titleMenuBtnRef = useRef<HTMLButtonElement>(null);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   // Animate text fade-out after width transition
   useEffect(() => {
@@ -270,6 +277,38 @@ function App() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showModelMenu]);
 
+  // Close title menu on outside click
+  useEffect(() => {
+    if (!showTitleMenu) return;
+    function handleClick(e: MouseEvent) {
+      if (
+        titleMenuRef.current &&
+        !titleMenuRef.current.contains(e.target as Node) &&
+        titleMenuBtnRef.current &&
+        !titleMenuBtnRef.current.contains(e.target as Node)
+      ) {
+        setShowTitleMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showTitleMenu]);
+
+  // Close share modal on outside click
+  useEffect(() => {
+    if (!showShareModal) return;
+    function handleOutsideClick(e: MouseEvent) {
+      if (
+        shareModalContentRef.current &&
+        !shareModalContentRef.current.contains(e.target as Node)
+      ) {
+        setShowShareModal(false);
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [showShareModal]);
+
   return (
     <div className="flex h-screen from-[#262624] to-[#30302e] bg-gradient-to-b text-gray-100 styrene-font">
       {/* Sidebar */}
@@ -298,12 +337,8 @@ function App() {
             </button>
             {/* Animated text/logo fade/scale */}
             <div
-              className={`overflow-hidden transition-all duration-200 ease-in-out ml-2`}
-              
-            >
-             
-                <span className={`tiempos-font text-white text-xl h-6 select-none transition-all duration-150 ease-in-out whitespace-nowrap ${sidebarCollapsed ? 'hidden' : ''}`}>Scott Daly</span>
-              
+              className={`overflow-hidden transition-all duration-200 ease-in-out ml-2`} >
+             <span className={`tiempos-font text-white text-xl h-6 select-none transition-all duration-150 ease-in-out whitespace-nowrap ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Scott Daly</span>
             </div>
           </div>
         </div>
@@ -375,7 +410,7 @@ function App() {
           </div>
         )}
         {sidebarCollapsed && (
-          <div className="mt-auto mb-4 flex flex-col items-center space-y-4">
+          <div className="mt-auto flex flex-col items-start">
             <div className="w-8 h-8 rounded-full bg-[#6c5bb9] flex items-center justify-center">
               <span className="text-xs styrene-font-bold">CL</span>
             </div>
@@ -394,82 +429,46 @@ function App() {
         <div className="bg-gradient-to-b from-[#262624] via-[#262624] to-[#262624]/0 md:pl-6 md:pr-4 px-2 w-full z-[-1] -bottom-5 inset-0 via-50% absolute pointer-events-none"></div>
         <div className='flex items-center justify-between w-full'>
           <div className="flex-1 flex relative py-2">
-            {isRenaming ? (
-              <form onSubmit={handleRenameSubmit} className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="bg-[#171717] text-gray-100 px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
-                  autoFocus
-                />
-                <button
-                  type="submit"
-                  className="px-3 py-1 bg-gray-700 rounded-md hover:bg-gray-600 text-sm"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={handleRenameCancel}
-                  className="px-3 py-1 bg-gray-800 rounded-md hover:bg-gray-700 text-sm"
-                >
-                  Cancel
-                </button>
-              </form>
-            ) : (
+            {!isRenaming ? (
               <div className='flex items-center'>
-              
-              <button 
-                onClick={() => setShowTitleMenu(!showTitleMenu)}
-                className="flex items-center hover:cursor-pointer hover:bg-black px-1 py-0.5 rounded-md ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none"
-              >
-                <span className="truncate tracking-tight text-[0.85rem] styrene-font">{currentChat.title}</span>
-                <ChevronDown className="w-4 h-4 text-[#ceccc5]" />
-              </button>
-              </div>
-            )}
-            
-            {showTitleMenu && !isRenaming && (
-              <div className="absolute z-[10] top-full min-w-[8rem] w-[128px] mt-1 styrene-font text-[#e5e5e2] bg-[#262624] border-[1px] border-[#5f5d59]/25 backdrop-blur-xl rounded-lg p-1 overflow-hidden menu-shadow ">
                 <button 
-                  className="w-full text-left px-2 py-1 hover:bg-[#151514]/70 hover:text-[#f8f8f7] rounded hover:cursor-pointer"
+                  ref={titleMenuBtnRef}
+                  onClick={() => setShowTitleMenu(!showTitleMenu)}
+                  className="flex items-center hover:cursor-pointer hover:bg-black px-1 py-0.5 rounded-md ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none"
+                >
+                  <span className="truncate tracking-tight text-[0.85rem] styrene-font">{currentChat.title}</span>
+                  <ChevronDown className="w-4 h-4 text-[#ceccc5]" />
+                </button>
+              </div>
+            ) : null}
+            {showTitleMenu && !isRenaming && (
+              <div
+                ref={titleMenuRef}
+                className="absolute z-[10] tracking-tight top-full min-w-[8rem] w-[128px] mt-1 styrene-font text-[#c2c0b6] bg-[#30302e] border-[1px] border-[#5f5d59]/50 backdrop-blur-xl rounded-lg p-1 overflow-hidden menu-shadow ">
+                <button 
+                  className="w-full text-left px-2 py-1 hover:bg-[#151514]/70 rounded hover:cursor-pointer"
                   onClick={handleRename}
                 >
                   Rename
                 </button>
-                <button className="w-full text-left px-2 py-1 hover:bg-[#151514]/70 hover:text-[#f8f8f7] rounded hover:cursor-pointer">
+                <button className="w-full text-left px-2 py-1 text-[#e86b6b] hover:bg-[#240e0d]/40 rounded hover:cursor-pointer"
+                  onClick={() => {
+                    setIsConfirmingDelete(true);
+                    setShowTitleMenu(false);
+                  }}>
                   Delete
                 </button>
               </div>
             )}
           </div>
           <div className="">
-          <button className="inline-flex
-          items-center
-          justify-center
-          relative
-          shrink-0
-          can-focus
-          hover:cursor-pointer
-          select-none
-          disabled:pointer-events-none
-          disabled:opacity-50
-          disabled:shadow-none
-          disabled:drop-shadow-none text-text-300
-          border-transparent
-          transition
-          styrene-font
-          duration-300
-          ease-[cubic-bezier(0.165,0.85,0.45,1)]
-          hover:bg-[#0f0f0e]
-          aria-pressed:bg-[#0f0f0e]
-          aria-checked:bg-[#0f0f0e]
-          aria-expanded:bg-[#141413]
-          hover:text-[#faf9f5]
-          aria-pressed:text-[#faf9f5]
-          aria-checked:text-[#faf9f5]
-          aria-expanded:text-[#faf9f5] h-9 px-4 py-2 rounded-lg min-w-[5rem] active:scale-[0.985] whitespace-nowrap text-sm pl-2 pr-3 gap-1 font-medium text-sm !text-[#faf9f5]" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M214,112v96a14,14,0,0,1-14,14H56a14,14,0,0,1-14-14V112A14,14,0,0,1,56,98H80a6,6,0,0,1,0,12H56a2,2,0,0,0-2,2v96a2,2,0,0,0,2,2H200a2,2,0,0,0,2-2V112a2,2,0,0,0-2-2H176a6,6,0,0,1,0-12h24A14,14,0,0,1,214,112ZM92.24,68.24,122,38.49V136a6,6,0,0,0,12,0V38.49l29.76,29.75a6,6,0,1,0,8.48-8.48l-40-40a6,6,0,0,0-8.48,0l-40,40a6,6,0,1,0,8.48,8.48Z"></path></svg>Share</button>
+            <button
+              className="inline-flex items-center justify-center relative shrink-0 can-focus hover:cursor-pointer select-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-text-300 border-transparent transition styrene-font duration-300 ease-[cubic-bezier(0.165,0.85,0.45,1)] hover:bg-[#0f0f0e] aria-pressed:bg-[#0f0f0e] aria-checked:bg-[#0f0f0e] aria-expanded:bg-[#141413] hover:text-[#faf9f5] aria-pressed:text-[#faf9f5] aria-checked:text-[#faf9f5] aria-expanded:text-[#faf9f5] h-9 px-4 py-2 rounded-lg min-w-[5rem] active:scale-[0.985] whitespace-nowrap text-sm pl-2 pr-3 gap-1 font-medium text-sm !text-[#faf9f5]"
+              type="button"
+              onClick={() => setShowShareModal(true)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M214,112v96a14,14,0,0,1-14,14H56a14,14,0,0,1-14-14V112A14,14,0,0,1,56,98H80a6,6,0,0,1,0,12H56a2,2,0,0,0-2,2v96a2,2,0,0,0,2,2H200a2,2,0,0,0,2-2V112a2,2,0,0,0-2-2H176a6,6,0,0,1,0-12h24A14,14,0,0,1,214,112ZM92.24,68.24,122,38.49V136a6,6,0,0,0,12,0V38.49l29.76,29.75a6,6,0,1,0,8.48-8.48l-40-40a6,6,0,0,0-8.48,0l-40,40a6,6,0,1,0,8.48,8.48Z"></path></svg>Share
+            </button>
           </div>
         </div>
         </div>
@@ -586,6 +585,153 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Share Modal */}
+        {showShareModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div ref={shareModalContentRef} className="bg-[#232321] rounded-2xl shadow-2xl border border-[#5f5d59]/80 max-w-md w-full p-7 relative flex flex-col">
+              <div className="flex flex-row justify-between items-center">
+                <div className="text-2xl tiempos-font">Share Scott's Site</div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    className="text-[#9c9a92] hover:text-text-400 hover:bg-[#141413] -ml-2 rounded-full px-2 py-2 transition-colors cursor-pointer"
+                    onClick={() => setShowShareModal(false)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+                  </button>
+                </div>
+              </div>
+              <div className="text-sm text-[#c2c0b6] mb-5 styrene-font -mt-1">Anyone with this link can view</div>
+              <div className="flex items-center mb-2">
+                <input
+                  ref={shareLinkRef}
+                  type="text"
+                  value="https://anthropic.rsdaly.com/"
+                  readOnly
+                  className="flex-1 bg-transparent border border-[#c2c0b6]/80 rounded-lg px-3 py-2 text-[#c2c0b6] styrene-font focus:outline-none select-all"
+                  onFocus={e => e.target.select()}
+                />
+                
+              </div>
+              <div className="bg-[#141413] text-[#b8b5a9] text-xs rounded-lg px-2 py-2 mb-6 flex flex-row items-start gap-1.5">
+                <div className="flex flex-row items-center gap-1 pt-0.5">
+                <InfoIcon className="w-3.5 h-3.5" />
+                </div>
+                <div className="styrene-font">
+                <span className="">Don't share personal information or third-party content without permission,</span> and see our <a href="https://www.rsdaly.com/usage" className="underline hover:text-[#ae5630]">Usage Policy</a>.
+                </div>
+              </div>
+              <div>
+                <button
+                  className={
+                    copied
+                      ? "flex flex-row items-center gap-2 border border-white text-white bg-[#232321] px-4 py-3.5 rounded-lg text-sm font-medium styrene-font transition-all duration-200 shadow-md"
+                      : "flex flex-row items-center cursor-pointer gap-1.5 bg-[#ae5630] hover:bg-[#a3512b] text-white px-4 py-3.5 rounded-lg text-sm font-medium styrene-font transition-all duration-200"
+                  }
+                  onClick={() => {
+                    if (shareLinkRef.current) {
+                      shareLinkRef.current.select();
+                      document.execCommand('copy');
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }
+                  }}
+                  disabled={copied}
+                >
+                  {copied ? (
+                    <>
+                      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="10" r="9" stroke="white" strokeWidth="2" fill="none" />
+                        <path d="M6 10.5L9 13.5L14 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span className="font-semibold">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Link className="w-4 h-4" />
+                      Copy link
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rename Modal */}
+        {isRenaming && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 styrene-font">
+            <div className="bg-[#1f1e1d] rounded-2xl shadow-2xl border border-[#5f5d59]/80 max-w-md w-full p-6 relative flex flex-col">
+              <div className="text-xl tiempos-font mb-2">Rename chat</div>
+              <form onSubmit={handleRenameSubmit} className="flex flex-col gap-5">
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="bg-[#30302e] text-gray-100 border border-[#5f5d59]/50 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600"
+                  autoFocus
+                />
+                <div className="flex gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={handleRenameCancel}
+                    className="px-4 py-2 border border-[#5f5d59]/50 rounded-lg hover:bg-[#141413] hover:border-[#141413] text-sm tracking-tighter font-medium transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#faf9f5] hover:opacity-90 opacity-100 text-[#141413] hover:scale-102 tracking-tighter font-medium rounded-lg text-sm transition-all
+        ease-[cubic-bezier(0.165,0.85,0.45,1)]
+        duration-200
+         h-9 px-4 py-2 rounded-lg min-w-[5rem] whitespace-nowrap"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {isConfirmingDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 styrene-font">
+            <div className="bg-[#1f1e1d] rounded-2xl shadow-2xl border border-[#5f5d59]/80 max-w-md w-full p-6 relative flex flex-col">
+              <div className="text-xl tiempos-font text-white">Delete chat?</div>
+              <div className="mb-5 text-[#c2c0b6]">Are you sure you want to delete this chat?</div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmingDelete(false)}
+                  className="px-4 py-2 border border-[#5f5d59]/50 rounded-lg hover:bg-[#141413] hover:border-[#141413] text-sm tracking-tighter font-medium transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Remove the current chat
+                    const idx = chats.findIndex(chat => chat.id === currentChat.id);
+                    const updatedChats = chats.filter(chat => chat.id !== currentChat.id);
+                    setChats(updatedChats);
+                    // Select next chat, or previous, or first if any
+                    if (updatedChats.length > 0) {
+                      setCurrentChat(updatedChats[Math.max(0, idx - 1)]);
+                    } else {
+                      // If no chats left, do nothing or show a placeholder
+                      // setCurrentChat(undefined); // Not needed if always at least one chat
+                    }
+                    setIsConfirmingDelete(false);
+                  }}
+                  className="px-4 py-2 bg-[#8a2424] hover:opacity-95 hover:scale-102 text-white rounded-lg text-sm tracking-tighter font-medium transition-all duration-200"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
