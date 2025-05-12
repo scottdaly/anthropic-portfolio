@@ -185,6 +185,8 @@ function App() {
   const titleMenuRef = useRef<HTMLDivElement>(null);
   const titleMenuBtnRef = useRef<HTMLButtonElement>(null);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [sidebarOverlayOpen, setSidebarOverlayOpen] = useState(false);
 
   // Animate text fade-out after width transition
   useEffect(() => {
@@ -196,6 +198,17 @@ function App() {
     }
     return () => clearTimeout(timeout);
   }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setSidebarOverlayOpen(false); // Close overlay if resizing to desktop
+      }
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleSubmitMessage = () => {
     if (!inputValue.trim()) return;
@@ -311,184 +324,296 @@ function App() {
 
   return (
     <div className="flex h-screen from-[#262624] to-[#30302e] bg-gradient-to-b text-gray-100 styrene-font">
-      {/* Sidebar */}
-      <div
-        style={{ width: sidebarCollapsed ? '3rem' : '18rem', transition: 'width 0.2s cubic-bezier(0.4,0,0.2,1)' }}
-        className={
-          'bg-[#1f1e1d] border-r-[1px] border-[#5f5d59]/60 flex flex-col transition-colors duration-300 ease-in-out'
-        }
-      >
-        <div className={`py-2 px-2 flex items-center justify-between transition-all duration-300 ease-in-out`}> 
-          <div className={`flex items-center transition-all duration-300 ease-in-out pb-4`}> 
-            <button 
-              className="inline-flex items-center justify-center relative shrink-0 can-focus select-none hover:cursor-pointer disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-[#c2c0b6] border-transparent transition font-styrene duration-300 ease-[cubic-bezier(0.165,0.85,0.45,1)] hover:bg-[#0f0f0e] aria-pressed:bg-[#0f0f0e] aria-checked:bg-[#0f0f0e] aria-expanded:bg-[#141413] hover:text-[#c2c0b6] aria-pressed:text-[#c2c0b6] aria-checked:text-[#c2c0b6] aria-expanded:text-[#c2c0b6] h-8 w-8 rounded-md active:scale-95 group"
-              onClick={() => setSidebarCollapsed((v) => !v)}
-              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <div className="relative *:duration-300 ">
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="shrink-0 opacity-100 scale-100 group-hover:opacity-0 group-hover:scale-80 transition-all text-[#c2c0b6]">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 3C1.67157 3 1 3.67157 1 4.5V15.5C1 16.3284 1.67157 17 2.5 17H17.5C18.3284 17 19 16.3284 19 15.5V4.5C19 3.67157 18.3284 3 17.5 3H2.5ZM2 4.5C2 4.22386 2.22386 4 2.5 4H6V16H2.5C2.22386 16 2 15.7761 2 15.5V4.5ZM7 16H17.5C17.7761 16 18 15.7761 18 15.5V4.5C18 4.22386 17.7761 4 17.5 4H7V16Z"></path>
-                </svg>
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 opacity-0 scale-50 absolute inset-0 group-hover:scale-100 group-hover:opacity-100 transition-all text-[#c2c0b6] ${sidebarCollapsed ? 'rotate-180' : ''}`}>
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 10C5 9.85913 5.05943 9.72479 5.16366 9.63003L10.6637 4.63003C10.868 4.44428 11.1842 4.45933 11.37 4.66366C11.5557 4.86799 11.5407 5.18422 11.3363 5.36997L6.7933 9.5L17.5 9.5C17.7761 9.5 18 9.72386 18 10C18 10.2761 17.7761 10.5 17.5 10.5L6.7933 10.5L11.3363 14.63C11.5407 14.8158 11.5557 15.132 11.37 15.3363C11.1842 15.5407 10.868 15.5557 10.6637 15.37L5.16366 10.37C5.05943 10.2752 5 10.1409 5 10Z"></path>
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 2C2.77614 2 3 2.22386 3 2.5L3 17.5C3 17.7761 2.77614 18 2.5 18C2.22385 18 2 17.7761 2 17.5L2 2.5C2 2.22386 2.22386 2 2.5 2Z"></path>
-                </svg>
+      {/* Sidebar (slide in/out on mobile) */}
+      {isMobile ? (
+        <>
+          {/* Backdrop */}
+          <div
+            className={`fixed inset-0 z-40 transition-opacity duration-200 opacity-0 ${sidebarOverlayOpen ? 'bg-black/60 pointer-events-auto' : ' pointer-events-none'}`}
+            onClick={() => setSidebarOverlayOpen(false)}
+            aria-hidden="true"
+          />
+          
+          {/* Sidebar panel */}
+          <div
+            style={{
+              width: '16rem',
+              transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+              transform: sidebarOverlayOpen ? 'translateX(0)' : 'translateX(-100%)',
+              position: 'fixed',
+              zIndex: 50,
+              left: 0,
+              top: 0,
+              height: '100vh',
+              boxShadow: sidebarOverlayOpen ? '0 0 0 9999px rgba(0,0,0,0.0)' : undefined,
+            }}
+            className={
+              'bg-[#1f1e1d] border-r-[1px] border-[#5f5d59]/60 flex flex-col transition-colors duration-300 ease-in-out shadow-2xl'
+            }
+          >
+            
+            <div className={`py-2 px-2 flex items-center justify-between transition-all duration-300 ease-in-out`}> 
+              <div className={`flex items-center transition-all duration-300 ease-in-out pb-4`}> 
+                <div className='h-[18px] w-[36px]'></div>
+                
+              </div>
+            </div>
+            {/* Sidebar Content */}
+            <div className="tracking-tight mx-2 transition-opacity duration-200 ease-in-out opacity-100">
+              <div className="relative group">
+                <button className={`w-full hover:cursor-pointer text-left px-1 py-1.5 rounded-lg flex items-center space-x-1 text-[#d97757] gap-1 ${sidebarCollapsed ? '' : 'hover:bg-[#d97757]/5'}`}>
+                  <div className="flex items-center space-x-1 bg-[#c96442] rounded-full p-1 group-hover:scale-105 group-hover:rotate-3 transition-all ease-in-out group-hover:shadow-md duration-150">
+                    <Plus className="w-4 h-4 text-white" />
+                  </div>
+                  <span className={`text-sm styrene-font-medium whitespace-nowrap transition-all duration-150 ease-in-out ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>New chat</span>
+                </button>
+                {/* Tooltip for collapsed sidebar */}
+                {sidebarCollapsed && (
+                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 opacity-0 group-hover:opacity-100 font-medium group-hover:pointer-events-auto transition-opacity duration-150 min-w-max px-2 py-1 rounded-md bg-[#0f0f0e] text-white text-[0.7rem] shadow-md flex items-center justify-center gap-2 select-none whitespace-nowrap">
+                    New chat <span className="text-[#c2c0b6] text-[0.7rem] pt-0.5">Ctrl+K</span>
+                  </div>
+                )}
+              </div>
+              {!sidebarCollapsed && showSidebarText && (
+              <div className="mt-4">
+                <div className="px-3 py-2 text-sm text-gray-400">
+                  <span className='text-[#ceccc5] styrene-font text-xs'>Recents</span>
                 </div>
-            </button>
-            {/* Animated text/logo fade/scale */}
-            <div
-              className={`overflow-hidden transition-all duration-200 ease-in-out ml-2`} >
-             <span className={`tiempos-font text-white text-xl h-6 select-none transition-all duration-150 ease-in-out whitespace-nowrap ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Scott Daly</span>
+                <div className="mt-1 space-y-0.5 px-1">
+                  {chats.map((chat) => (
+                    <button
+                      key={chat.id}
+                      onClick={() => setCurrentChat(chat)}
+                      className={`w-full px-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
+                        currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
+                      }`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
+                      <span className="truncate styrene-font">{chat.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+               )}
+            </div>
+            {/* Mobile floating profile/help icons */}
+            <div className="mt-auto flex flex-col items-start px-2 gap-2 mb-2">
+              <div className="w-8 h-8 rounded-full bg-[#6c5bb9] flex items-center justify-center">
+                <span className="text-xs styrene-font-bold">CL</span>
+              </div>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#191917]/25 border-[1px] border-[#5e5d59]/25">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Sidebar Content */}
-        
-          <div className="tracking-tight mx-2 transition-opacity duration-200 ease-in-out opacity-100">
-            <div className="relative group">
-              <button className={`w-full hover:cursor-pointer text-left px-1 py-1.5 rounded-lg flex items-center space-x-1 text-[#d97757] gap-1 ${sidebarCollapsed ? '' : 'hover:bg-[#d97757]/5'}`}>
-                <div className="flex items-center space-x-1 bg-[#c96442] rounded-full p-1 group-hover:scale-105 group-hover:rotate-3 transition-all ease-in-out group-hover:shadow-md duration-150">
-                  <Plus className="w-4 h-4 text-white" />
+        </>
+      ) : (
+        // Desktop sidebar
+        <div
+          style={{
+            width: sidebarCollapsed ? '3rem' : '18rem',
+            transition: 'width 0.2s cubic-bezier(0.4,0,0.2,1)',
+          }}
+          className={'bg-[#1f1e1d] border-r-[1px] border-[#5f5d59]/60 flex flex-col transition-colors duration-300 ease-in-out'}
+        >
+          <div className={`py-2 px-2 flex items-center justify-between transition-all duration-300 ease-in-out`}> 
+            <div className={`flex items-center transition-all duration-300 ease-in-out pb-4`}> 
+              
+              <button 
+                className="inline-flex items-center justify-center relative shrink-0 can-focus select-none hover:cursor-pointer disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-[#c2c0b6] border-transparent transition font-styrene duration-300 ease-[cubic-bezier(0.165,0.85,0.45,1)] hover:bg-[#0f0f0e] aria-pressed:bg-[#0f0f0e] aria-checked:bg-[#0f0f0e] aria-expanded:bg-[#141413] hover:text-[#c2c0b6] aria-pressed:text-[#c2c0b6] aria-checked:text-[#c2c0b6] aria-expanded:text-[#c2c0b6] h-8 w-8 rounded-md active:scale-95 group"
+                onClick={() => setSidebarCollapsed((v) => !v)}
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <div className="relative *:duration-300 ">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="shrink-0 opacity-100 scale-100 group-hover:opacity-0 group-hover:scale-80 transition-all text-[#c2c0b6]">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 3C1.67157 3 1 3.67157 1 4.5V15.5C1 16.3284 1.67157 17 2.5 17H17.5C18.3284 17 19 16.3284 19 15.5V4.5C19 3.67157 18.3284 3 17.5 3H2.5ZM2 4.5C2 4.22386 2.22386 4 2.5 4H6V16H2.5C2.22386 16 2 15.7761 2 15.5V4.5ZM7 16H17.5C17.7761 16 18 15.7761 18 15.5V4.5C18 4.22386 17.7761 4 17.5 4H7V16Z"></path>
+                  </svg>
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 opacity-0 scale-50 absolute inset-0 group-hover:scale-100 group-hover:opacity-100 transition-all text-[#c2c0b6] ${sidebarCollapsed ? 'rotate-180' : ''}`}>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5 10C5 9.85913 5.05943 9.72479 5.16366 9.63003L10.6637 4.63003C10.868 4.44428 11.1842 4.45933 11.37 4.66366C11.5557 4.86799 11.5407 5.18422 11.3363 5.36997L6.7933 9.5L17.5 9.5C17.7761 9.5 18 9.72386 18 10C18 10.2761 17.7761 10.5 17.5 10.5L6.7933 10.5L11.3363 14.63C11.5407 14.8158 11.5557 15.132 11.37 15.3363C11.1842 15.5407 10.868 15.5557 10.6637 15.37L5.16366 10.37C5.05943 10.2752 5 10.1409 5 10Z"></path>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 2C2.77614 2 3 2.22386 3 2.5L3 17.5C3 17.7761 2.77614 18 2.5 18C2.22385 18 2 17.7761 2 17.5L2 2.5C2 2.22386 2.22386 2 2.5 2Z"></path>
+                  </svg>
                 </div>
-                <span className={`text-sm styrene-font-medium whitespace-nowrap transition-all duration-150 ease-in-out ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>New chat</span>
               </button>
-              {/* Tooltip for collapsed sidebar */}
-              {sidebarCollapsed && (
-                <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 opacity-0 group-hover:opacity-100 font-medium group-hover:pointer-events-auto transition-opacity duration-150 min-w-max px-2 py-1 rounded-md bg-[#0f0f0e] text-white text-[0.7rem] shadow-md flex items-center justify-center gap-2 select-none whitespace-nowrap">
-                  New chat <span className="text-[#c2c0b6] text-[0.7rem] pt-0.5">Ctrl+K</span>
+              {/* Animated text/logo fade/scale */}
+              {!isMobile && (
+                <div
+                  className={`overflow-hidden transition-all duration-200 ease-in-out ml-2`} >
+                  <span className={`tiempos-font text-white text-xl h-6 select-none transition-all duration-150 ease-in-out whitespace-nowrap ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Scott Daly</span>
                 </div>
               )}
             </div>
-            {!sidebarCollapsed && showSidebarText && (
-            <div className="mt-4">
-              <div className="px-3 py-2 text-sm text-gray-400">
-                <span className='text-[#ceccc5] styrene-font text-xs'>Recents</span>
-              </div>
-              <div className="mt-1 space-y-0.5 px-1">
-                {chats.map((chat) => (
-                  <button
-                    key={chat.id}
-                    onClick={() => setCurrentChat(chat)}
-                    className={`w-full px-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
-                      currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
-                    }`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
-                    <span className="truncate styrene-font">{chat.title}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-             )}
           </div>
-       
-        
-        {/* Bottom Section */}
-        {!sidebarCollapsed && showSidebarText && (
-          <div className="mt-auto py-2 px-3 transition-opacity duration-200 ease-in-out opacity-100">
-            <div className="flex items-center justify-center rounded-t-md mx-2 py-1 border-t-[1px] border-r-[1px] border-l-[1px] border-[#5645a1]/50 bg-gradient-to-b from-[#6c5bb9]/0 to-[#6c5bb9]/5">
-              <span className="text-xs text-[#9b87f5]/80 tiempos-font">Professional Plan</span>
-            </div>
-            <div className="inline-flex items-center justify-center bg-[#191917]/25 hover:cursor-pointer bg-opacity-70 hover:bg-opacity-100 shrink-0 ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none border-[1px] border-[#5e5d59]/25 hover:border-[#5e5d59]/50 group relative z-[1] w-full overflow-hidden rounded-lg !px-2.5 !py-2 !text-left">
-              <div className="flex items-center w-full gap-1.5">
-                <div className="w-7 h-7 rounded-full bg-[#6c5bb9] flex items-center justify-center">
-                  <span className="text-xs styrene-font-bold">CL</span>
+
+          {/* Sidebar Content */}
+          {(!isMobile || sidebarOverlayOpen) && (
+            <div className="tracking-tight mx-2 transition-opacity duration-200 ease-in-out opacity-100">
+              <div className="relative group">
+                <button className={`w-full hover:cursor-pointer text-left px-1 py-1.5 rounded-lg flex items-center space-x-1 text-[#d97757] gap-1 ${sidebarCollapsed ? '' : 'hover:bg-[#d97757]/5'}`}>
+                  <div className="flex items-center space-x-1 bg-[#c96442] rounded-full p-1 group-hover:scale-105 group-hover:rotate-3 transition-all ease-in-out group-hover:shadow-md duration-150">
+                    <Plus className="w-4 h-4 text-white" />
+                  </div>
+                  <span className={`text-sm styrene-font-medium whitespace-nowrap transition-all duration-150 ease-in-out ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>New chat</span>
+                </button>
+                {/* Tooltip for collapsed sidebar */}
+                {sidebarCollapsed && (
+                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 opacity-0 group-hover:opacity-100 font-medium group-hover:pointer-events-auto transition-opacity duration-150 min-w-max px-2 py-1 rounded-md bg-[#0f0f0e] text-white text-[0.7rem] shadow-md flex items-center justify-center gap-2 select-none whitespace-nowrap">
+                    New chat <span className="text-[#c2c0b6] text-[0.7rem] pt-0.5">Ctrl+K</span>
+                  </div>
+                )}
+              </div>
+              {!sidebarCollapsed && showSidebarText && (
+              <div className="mt-4">
+                <div className="px-3 py-2 text-sm text-gray-400">
+                  <span className='text-[#ceccc5] styrene-font text-xs'>Recents</span>
                 </div>
-                <span className="min-w-0 flex-1 text-sm truncate tracking-tight">claudeluvr99@gmail.com</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+                <div className="mt-1 space-y-0.5 px-1">
+                  {chats.map((chat) => (
+                    <button
+                      key={chat.id}
+                      onClick={() => setCurrentChat(chat)}
+                      className={`w-full px-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
+                        currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
+                      }`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
+                      <span className="truncate styrene-font">{chat.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+               )}
+            </div>
+          )}
+         
+          
+          {/* Bottom Section */}
+          {!isMobile && !sidebarCollapsed && showSidebarText && (
+            <div className="mt-auto py-2 px-3 transition-opacity duration-200 ease-in-out opacity-100">
+              <div className="flex items-center justify-center rounded-t-md mx-2 py-1 border-t-[1px] border-r-[1px] border-l-[1px] border-[#5645a1]/50 bg-gradient-to-b from-[#6c5bb9]/0 to-[#6c5bb9]/5">
+                <span className="text-xs text-[#9b87f5]/80 tiempos-font">Professional Plan</span>
+              </div>
+              <div className="inline-flex items-center justify-center bg-[#191917]/25 hover:cursor-pointer bg-opacity-70 hover:bg-opacity-100 shrink-0 ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none border-[1px] border-[#5e5d59]/25 hover:border-[#5e5d59]/50 group relative z-[1] w-full overflow-hidden rounded-lg !px-2.5 !py-2 !text-left">
+                <div className="flex items-center w-full gap-1.5">
+                  <div className="w-7 h-7 rounded-full bg-[#6c5bb9] flex items-center justify-center">
+                    <span className="text-xs styrene-font-bold">CL</span>
+                  </div>
+                  <span className="min-w-0 flex-1 text-sm truncate tracking-tight">claudeluvr99@gmail.com</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        {!sidebarCollapsed && showSidebarText && (
-          <div className="mt-0.5 mb-4 flex items-center justify-end px-4 tracking-tight transition-opacity duration-200 ease-in-out opacity-100">
-            <div className="flex items-center space-x-1 hover:cursor-pointer group">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
-              <p className="text-xs text-[#ceccc5] group-hover:underline styrene-font-medium">Help & Support</p>
+          )}
+          {!isMobile && !sidebarCollapsed && showSidebarText && (
+            <div className="mt-0.5 mb-4 flex items-center justify-end px-4 tracking-tight transition-opacity duration-200 ease-in-out opacity-100">
+              <div className="flex items-center space-x-1 hover:cursor-pointer group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+                <p className="text-xs text-[#ceccc5] group-hover:underline styrene-font-medium">Help & Support</p>
+              </div>
             </div>
-          </div>
-        )}
-        {sidebarCollapsed && (
-          <div className="mt-auto flex flex-col items-start">
-            <div className="w-8 h-8 rounded-full bg-[#6c5bb9] flex items-center justify-center">
-              <span className="text-xs styrene-font-bold">CL</span>
+          )}
+          {!isMobile && sidebarCollapsed && (
+            <div className="mt-auto flex flex-col items-start px-2 gap-2 mb-2">
+              <div className="w-8 h-8 rounded-full bg-[#6c5bb9] flex items-center justify-center">
+                <span className="text-xs styrene-font-bold">CL</span>
+              </div>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#191917]/25 border-[1px] border-[#5e5d59]/25">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+              </button>
             </div>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#191917]/25 border-[1px] border-[#5e5d59]/25">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
-            </button>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col tiempos-font text-[#f5f4ef] overflow-y-scroll bg-[#262624]">
         {/* Header */}
-        <div className='sticky top-0 z-[8] -mb-6 flex h-14 items-center gap-3 pl-11 md:pt-1 md:pb-0.5 md:pl-8'>
-          
-        <div className="bg-gradient-to-b from-[#262624] via-[#262624] to-[#262624]/0 md:pl-6 md:pr-4 px-2 w-full z-[-1] -bottom-5 inset-0 via-50% absolute pointer-events-none"></div>
-        <div className='flex items-center justify-between w-full'>
-          <div className="flex-1 flex relative py-2">
-            {!isRenaming ? (
-              <div className='flex items-center'>
-                <button 
-                  ref={titleMenuBtnRef}
-                  onClick={() => setShowTitleMenu(!showTitleMenu)}
-                  className="flex items-center hover:cursor-pointer hover:bg-black px-1 py-0.5 rounded-md ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none"
-                >
-                  <span className="truncate tracking-tight text-[0.85rem] styrene-font">{currentChat.title}</span>
-                  <ChevronDown className="w-4 h-4 text-[#ceccc5]" />
-                </button>
-              </div>
-            ) : null}
-            {showTitleMenu && !isRenaming && (
-              <div
-                ref={titleMenuRef}
-                className="absolute z-[10] tracking-tight top-full min-w-[8rem] w-[128px] mt-1 styrene-font text-[#c2c0b6] bg-[#30302e] border-[1px] border-[#5f5d59]/50 backdrop-blur-xl rounded-lg p-1 overflow-hidden menu-shadow ">
-                <button 
-                  className="w-full text-left px-2 py-1 hover:bg-[#151514]/70 rounded hover:cursor-pointer"
-                  onClick={handleRename}
-                >
-                  Rename
-                </button>
-                <button className="w-full text-left px-2 py-1 text-[#e86b6b] hover:bg-[#240e0d]/40 rounded hover:cursor-pointer"
-                  onClick={() => {
-                    setIsConfirmingDelete(true);
-                    setShowTitleMenu(false);
-                  }}>
-                  Delete
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="">
+        {isMobile && (
             <button
-              className="inline-flex items-center justify-center relative shrink-0 can-focus hover:cursor-pointer select-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-text-300 border-transparent transition styrene-font duration-300 ease-[cubic-bezier(0.165,0.85,0.45,1)] hover:bg-[#0f0f0e] aria-pressed:bg-[#0f0f0e] aria-checked:bg-[#0f0f0e] aria-expanded:bg-[#141413] hover:text-[#faf9f5] aria-pressed:text-[#faf9f5] aria-checked:text-[#faf9f5] aria-expanded:text-[#faf9f5] h-9 px-4 py-2 rounded-lg min-w-[5rem] active:scale-[0.985] whitespace-nowrap text-sm pl-2 pr-3 gap-1 font-medium text-sm !text-[#faf9f5]"
-              type="button"
-              onClick={() => setShowShareModal(true)}
+              className="z-150 inline-flex items-center justify-center absolute top-2 left-2 shrink-0 can-focus select-none hover:cursor-pointer disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-[#c2c0b6] border-transparent transition font-styrene duration-300 ease-[cubic-bezier(0.165,0.85,0.45,1)] hover:bg-[#0f0f0e] aria-pressed:bg-[#0f0f0e] aria-checked:bg-[#0f0f0e] aria-expanded:bg-[#141413] hover:text-[#c2c0b6] aria-pressed:text-[#c2c0b6] aria-checked:text-[#c2c0b6] aria-expanded:text-[#c2c0b6] h-8 w-8 rounded-md active:scale-95 group"
+              onClick={() => setSidebarOverlayOpen(!sidebarOverlayOpen)}
+              aria-label="Open sidebar"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M214,112v96a14,14,0,0,1-14,14H56a14,14,0,0,1-14-14V112A14,14,0,0,1,56,98H80a6,6,0,0,1,0,12H56a2,2,0,0,0-2,2v96a2,2,0,0,0,2,2H200a2,2,0,0,0,2-2V112a2,2,0,0,0-2-2H176a6,6,0,0,1,0-12h24A14,14,0,0,1,214,112ZM92.24,68.24,122,38.49V136a6,6,0,0,0,12,0V38.49l29.76,29.75a6,6,0,1,0,8.48-8.48l-40-40a6,6,0,0,0-8.48,0l-40,40a6,6,0,1,0,8.48,8.48Z"></path></svg>Share
+              <div className="relative *:duration-300 ">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className={`shrink-0  scale-100 group-hover:opacity-0 group-hover:scale-80 transition-all text-[#c2c0b6] ${sidebarOverlayOpen ? "opacity-0" : 'opacity-100'}`}>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 3C1.67157 3 1 3.67157 1 4.5V15.5C1 16.3284 1.67157 17 2.5 17H17.5C18.3284 17 19 16.3284 19 15.5V4.5C19 3.67157 18.3284 3 17.5 3H2.5ZM2 4.5C2 4.22386 2.22386 4 2.5 4H6V16H2.5C2.22386 16 2 15.7761 2 15.5V4.5ZM7 16H17.5C17.7761 16 18 15.7761 18 15.5V4.5C18 4.22386 17.7761 4 17.5 4H7V16Z"></path>
+                  </svg>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 opacity-0 scale-50 absolute inset-0 group-hover:scale-100 group-hover:opacity-100 transition-all text-[#c2c0b6] ${sidebarOverlayOpen ? 'opacity-100 scale-100' : 'rotate-180'}`}>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5 10C5 9.85913 5.05943 9.72479 5.16366 9.63003L10.6637 4.63003C10.868 4.44428 11.1842 4.45933 11.37 4.66366C11.5557 4.86799 11.5407 5.18422 11.3363 5.36997L6.7933 9.5L17.5 9.5C17.7761 9.5 18 9.72386 18 10C18 10.2761 17.7761 10.5 17.5 10.5L6.7933 10.5L11.3363 14.63C11.5407 14.8158 11.5557 15.132 11.37 15.3363C11.1842 15.5407 10.868 15.5557 10.6637 15.37L5.16366 10.37C5.05943 10.2752 5 10.1409 5 10Z"></path>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 2C2.77614 2 3 2.22386 3 2.5L3 17.5C3 17.7761 2.77614 18 2.5 18C2.22385 18 2 17.7761 2 17.5L2 2.5C2 2.22386 2.22386 2 2.5 2Z"></path>
+                  </svg>
+              </div>
             </button>
+
+          )}
+          {isMobile && (
+          <p className={`absolute tiempos-font text-xl top-3 left-12 z-150 transition-all ${sidebarOverlayOpen ? 'opacity-100' : 'opacity-0'}`}>Scott Daly</p>
+          )}
+        <div className='sticky top-0 z-[8] -mb-6 flex h-12 items-center gap-1 md:gap-3 pl-11 md:pb-0.5 md:pl-8 '>
+          {/* Mobile sidebar toggle button inline with chat title */}
+          
+          <div className="bg-gradient-to-b from-[#262624] via-[#262624] to-[#262624]/0 md:pl-6 md:pr-4 px-2 w-full z-[-1] -bottom-5 inset-0 via-50% absolute pointer-events-none"></div>
+          <div className='flex items-center justify-between w-full'>
+            <div className="flex-1 flex relative">
+              {!isRenaming ? (
+                <div className='flex items-center'>
+                  <button 
+                    ref={titleMenuBtnRef}
+                    onClick={() => setShowTitleMenu(!showTitleMenu)}
+                    className="flex items-center hover:cursor-pointer hover:bg-black px-1 py-0.5 rounded-md ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none"
+                  >
+                    <span className="truncate tracking-tight text-[0.85rem] styrene-font">{currentChat.title}</span>
+                    <ChevronDown className="w-4 h-4 text-[#ceccc5]" />
+                  </button>
+                </div>
+              ) : null}
+              {showTitleMenu && !isRenaming && (
+                <div
+                  ref={titleMenuRef}
+                  className="absolute z-[10] tracking-tight top-full min-w-[8rem] w-[128px] mt-1 styrene-font text-[#c2c0b6] bg-[#30302e] border-[1px] border-[#5f5d59]/50 backdrop-blur-xl rounded-lg p-1 overflow-hidden menu-shadow ">
+                  <button 
+                    className="w-full text-left px-2 py-1 hover:bg-[#151514]/70 rounded hover:cursor-pointer"
+                    onClick={handleRename}
+                  >
+                    Rename
+                  </button>
+                  <button className="w-full text-left px-2 py-1 text-[#e86b6b] hover:bg-[#240e0d]/40 rounded hover:cursor-pointer"
+                    onClick={() => {
+                      setIsConfirmingDelete(true);
+                      setShowTitleMenu(false);
+                    }}>
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="">
+              <button
+                className="inline-flex items-center justify-center relative shrink-0 can-focus tracking-tighter hover:cursor-pointer select-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none text-text-300 border-transparent transition styrene-font duration-300 ease-[cubic-bezier(0.165,0.85,0.45,1)] hover:bg-[#0f0f0e] aria-pressed:bg-[#0f0f0e] aria-checked:bg-[#0f0f0e] aria-expanded:bg-[#141413] hover:text-[#faf9f5] aria-pressed:text-[#faf9f5] aria-checked:text-[#faf9f5] aria-expanded:text-[#faf9f5] h-9 px-4 py-2 rounded-lg min-w-[5rem] active:scale-[0.985] whitespace-nowrap text-sm pl-2 pr-3 gap-1 font-medium text-sm !text-[#faf9f5]"
+                type="button"
+                onClick={() => setShowShareModal(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M214,112v96a14,14,0,0,1-14,14H56a14,14,0,0,1-14-14V112A14,14,0,0,1,56,98H80a6,6,0,0,1,0,12H56a2,2,0,0,0-2,2v96a2,2,0,0,0,2,2H200a2,2,0,0,0,2-2V112a2,2,0,0,0-2-2H176a6,6,0,0,1,0-12h24A14,14,0,0,1,214,112ZM92.24,68.24,122,38.49V136a6,6,0,0,0,12,0V38.49l29.76,29.75a6,6,0,1,0,8.48-8.48l-40-40a6,6,0,0,0-8.48,0l-40,40a6,6,0,1,0,8.48,8.48Z"></path></svg>Share
+              </button>
+            </div>
           </div>
-        </div>
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 mt-8 pl-10 text-[#f5f4ef] md:pr-10">
+        <div className="flex-1 mt-7 pl-10 text-[#f5f4ef] md:pr-10">
           <div className="max-w-[45rem] mx-auto">
             {currentChat.messages.map((message) => (
               <div key={message.id} className={`group relative ${
-                message.sender === 'user' ? 'mb-4 inline-flex flex-col break-words bg-gradient-to-b from-[#1f1e1d] to-[#1a1918] styrene-font max-w-[75ch] ml-px pl-2.5 py-2.5 pr-6 leading-6 rounded-xl text-[0.9375rem] shadow-[0_2px_16px_rgba(0,0,0,0.025)]' : 'mb-8 bg-gradient-to-b from-[#3C3C39]/75 to-[#30302E] pr-4 md:pr-8 leading-[1.65rem] tracking-[0.015em] pt-3.5 px-4 pb-[1.125rem] rounded-2xl border-[0.5px] border-[#5e5d59]/30 shadow-[0_4px_24px_rgba(0,0,0,0.015)]'
+                message.sender === 'user' ? 'mb-4 inline-flex flex-col break-words bg-[#141413] styrene-font max-w-[75ch] ml-px pl-2.5 py-2.5 pr-6 leading-6 rounded-xl text-[0.9375rem] shadow-[0_2px_16px_rgba(0,0,0,0.025)]' : 'mb-8 bg-gradient-to-b from-[#3C3C39]/75 to-[#30302E] pr-4 md:pr-8 leading-[1.65rem] tracking-[0.015em] pt-3.5 px-4 pb-[1.125rem] rounded-2xl border-[0.5px] border-[#5e5d59]/30 shadow-[0_4px_24px_rgba(0,0,0,0.015)]'
               }`}>
-                <div className="flex items-start space-x-4">
+                <div className="flex items-start space-x-2">
                   {message.sender === 'user' && (
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                      'bg-[#e5e5e2] text-[#30302e] styrene-font-bold text-[12px]'
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center tracking-tighter ${
+                      'bg-[#c2c0b6] text-[#30302e] styrene-font-bold text-[12px]'
                     }`}>
-                    <span>U</span>
+                    <span>CL</span>
                   </div>
                   )}
-                  <div className="flex-1 relative">
+                  <div className="flex-1 relative tracking-tight">
                     <div className="prose prose-invert prose-p:my-2 prose-headings:my-4 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-strong:text-[#faf9f5] prose-em:text-[#faf9f5] prose-code:text-[#faf9f5] prose-code:bg-[#1f1e1d] prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
                       <ReactMarkdown>{message.content}</ReactMarkdown>
                     </div>
