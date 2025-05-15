@@ -29,6 +29,44 @@ Claude's coding chops powered *all* of my recent prototypes—from React compone
 
 I admire that you ship research *and* red‑team methods in the same breath.  At GoDaddy, I help embed accessibility and privacy guardrails inside our design system; Anthropic does the same for AI alignment.  Designing products where safety is a first‑class constraint feels like the natural next step in my career.`,
       },
+      {
+        id: 3,
+        sender: 'user',
+        content:
+          'What draws you to Anthropic and how does our mission resonate with your own goals as a product designer?',
+      },
+      {
+        id: 4,
+        sender: 'assistant',
+        content: `I've spent nights and weekends hacking on AI side‑projects, so two things about Anthropic hit home:
+
+1. **Useful models for builders.** 
+
+Claude's coding chops powered *all* of my recent prototypes—from React component generators to Go APIs—cutting exploration time in half.  As a self‑taught developer, that "assistant‑as‑pair‑programmer" experience is magic I want to refine for millions of other makers.
+
+2. **Safety baked in.**
+
+I admire that you ship research *and* red‑team methods in the same breath.  At GoDaddy, I help embed accessibility and privacy guardrails inside our design system; Anthropic does the same for AI alignment.  Designing products where safety is a first‑class constraint feels like the natural next step in my career.`,
+      },
+      {
+        id: 5,
+        sender: 'user',
+        content:
+          'What draws you to Anthropic and how does our mission resonate with your own goals as a product designer?',
+      },
+      {
+        id: 6,
+        sender: 'assistant',
+        content: `I've spent nights and weekends hacking on AI side‑projects, so two things about Anthropic hit home:
+
+1. **Useful models for builders.** 
+
+Claude's coding chops powered *all* of my recent prototypes—from React component generators to Go APIs—cutting exploration time in half.  As a self‑taught developer, that "assistant‑as‑pair‑programmer" experience is magic I want to refine for millions of other makers.
+
+2. **Safety baked in.**
+
+I admire that you ship research *and* red‑team methods in the same breath.  At GoDaddy, I help embed accessibility and privacy guardrails inside our design system; Anthropic does the same for AI alignment.  Designing products where safety is a first‑class constraint feels like the natural next step in my career.`,
+      },
     ],
   },
 
@@ -201,9 +239,9 @@ function App() {
 
   useEffect(() => {
     function handleResize() {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setSidebarOverlayOpen(false); // Close overlay if resizing to desktop
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024) {
+        setSidebarOverlayOpen(false); // Close overlay if resizing to desktop 
       }
     }
     window.addEventListener('resize', handleResize);
@@ -322,8 +360,34 @@ function App() {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [showShareModal]);
 
+  // Sidebar bottom section (expanded)
+  const SidebarBottomExpanded = (
+    <>
+      <div className="mt-auto py-2 px-3 transition-opacity duration-200 ease-in-out opacity-100">
+        <div className="flex items-center justify-center rounded-t-md mx-2 py-1 border-t-[1px] border-r-[1px] border-l-[1px] border-[#5645a1]/50 bg-gradient-to-b from-[#6c5bb9]/0 to-[#6c5bb9]/5">
+          <span className="text-xs text-[#9b87f5]/80 tiempos-font whitespace-nowrap">Professional Plan</span>
+        </div>
+        <div className="inline-flex items-center justify-center bg-[#191917]/25 hover:cursor-pointer bg-opacity-70 hover:bg-opacity-100 shrink-0 ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none border-[1px] border-[#5e5d59]/25 hover:border-[#5e5d59]/50 group relative z-[1] w-full overflow-hidden rounded-lg !px-2.5 !py-2 !text-left">
+          <div className="flex items-center w-full gap-1.5">
+            <div className="w-7 h-7 rounded-full bg-[#6c5bb9] flex items-center justify-center">
+              <span className="text-xs styrene-font-bold">CL</span>
+            </div>
+            <span className="min-w-0 flex-1 text-sm truncate tracking-tight whitespace-nowrap">claudeluvr99@gmail.com</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+          </div>
+        </div>
+      </div>
+      <div className="mt-0.5 mb-4 flex items-center justify-end px-4 tracking-tight transition-opacity duration-200 ease-in-out opacity-100">
+        <div className="flex items-center space-x-1 hover:cursor-pointer group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+          <p className="text-xs text-[#ceccc5] group-hover:underline styrene-font-medium whitespace-nowrap">Help & Support</p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
-    <div className="flex h-screen from-[#262624] to-[#30302e] bg-gradient-to-b text-gray-100 styrene-font">
+    <div className="flex h-screen from-[#262624] to-[#30302e] bg-gradient-to-b text-gray-100 styrene-font max-w-screen overflow-x-none">
       {/* Sidebar (slide in/out on mobile) */}
       {isMobile ? (
         <>
@@ -354,7 +418,7 @@ function App() {
             
             <div className={`py-2 px-2 flex items-center justify-between transition-all duration-300 ease-in-out`}> 
               <div className={`flex items-center transition-all duration-300 ease-in-out pb-4`}> 
-                <div className='h-[18px] w-[36px]'></div>
+                <div className='h-[32px] w-[36px]'></div>
                 
               </div>
             </div>
@@ -396,15 +460,8 @@ function App() {
               </div>
                )}
             </div>
-            {/* Mobile floating profile/help icons */}
-            <div className="mt-auto flex flex-col items-start px-2 gap-2 mb-2">
-              <div className="w-8 h-8 rounded-full bg-[#6c5bb9] flex items-center justify-center">
-                <span className="text-xs styrene-font-bold">CL</span>
-              </div>
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#191917]/25 border-[1px] border-[#5e5d59]/25">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
-              </button>
-            </div>
+            {/* Expanded bottom section for mobile overlay */}
+            {sidebarOverlayOpen && SidebarBottomExpanded}
           </div>
         </>
       ) : (
@@ -414,7 +471,7 @@ function App() {
             width: sidebarCollapsed ? '3rem' : '18rem',
             transition: 'width 0.2s cubic-bezier(0.4,0,0.2,1)',
           }}
-          className={'bg-[#1f1e1d] border-r-[1px] border-[#5f5d59]/60 flex flex-col transition-colors duration-300 ease-in-out'}
+          className={` border-r-[1px] border-[#5f5d59]/50 flex flex-col transition-colors duration-300 ease-in-out ${sidebarCollapsed ? 'bg-[#262624]' : 'bg-[#1f1e1d]'}`}
         >
           <div className={`py-2 px-2 flex items-center justify-between transition-all duration-300 ease-in-out`}> 
             <div className={`flex items-center transition-all duration-300 ease-in-out pb-4`}> 
@@ -437,8 +494,8 @@ function App() {
               {/* Animated text/logo fade/scale */}
               {!isMobile && (
                 <div
-                  className={`overflow-hidden transition-all duration-200 ease-in-out ml-2`} >
-                  <span className={`tiempos-font text-white text-xl h-6 select-none transition-all duration-150 ease-in-out whitespace-nowrap ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Scott Daly</span>
+                  className={`overflow-hidden transition-all duration-200 ease-in-out ml-1.5 mt-1`} >
+                  <span className={`tiempos-font text-white text-xl transition-all duration-150 ease-in-out whitespace-nowrap ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Scott Daly</span>
                 </div>
               )}
             </div>
@@ -487,31 +544,9 @@ function App() {
          
           
           {/* Bottom Section */}
-          {!isMobile && !sidebarCollapsed && showSidebarText && (
-            <div className="mt-auto py-2 px-3 transition-opacity duration-200 ease-in-out opacity-100">
-              <div className="flex items-center justify-center rounded-t-md mx-2 py-1 border-t-[1px] border-r-[1px] border-l-[1px] border-[#5645a1]/50 bg-gradient-to-b from-[#6c5bb9]/0 to-[#6c5bb9]/5">
-                <span className="text-xs text-[#9b87f5]/80 tiempos-font">Professional Plan</span>
-              </div>
-              <div className="inline-flex items-center justify-center bg-[#191917]/25 hover:cursor-pointer bg-opacity-70 hover:bg-opacity-100 shrink-0 ring-offset-2 ring-accent-[#ae5630] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none disabled:drop-shadow-none border-[1px] border-[#5e5d59]/25 hover:border-[#5e5d59]/50 group relative z-[1] w-full overflow-hidden rounded-lg !px-2.5 !py-2 !text-left">
-                <div className="flex items-center w-full gap-1.5">
-                  <div className="w-7 h-7 rounded-full bg-[#6c5bb9] flex items-center justify-center">
-                    <span className="text-xs styrene-font-bold">CL</span>
-                  </div>
-                  <span className="min-w-0 flex-1 text-sm truncate tracking-tight">claudeluvr99@gmail.com</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
-                </div>
-              </div>
-            </div>
-          )}
-          {!isMobile && !sidebarCollapsed && showSidebarText && (
-            <div className="mt-0.5 mb-4 flex items-center justify-end px-4 tracking-tight transition-opacity duration-200 ease-in-out opacity-100">
-              <div className="flex items-center space-x-1 hover:cursor-pointer group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
-                <p className="text-xs text-[#ceccc5] group-hover:underline styrene-font-medium">Help & Support</p>
-              </div>
-            </div>
-          )}
-          {!isMobile && sidebarCollapsed && (
+          {!sidebarCollapsed && showSidebarText && SidebarBottomExpanded}
+          {/* Collapsed bottom for desktop only */}
+          {sidebarCollapsed && (
             <div className="mt-auto flex flex-col items-start px-2 gap-2 mb-2">
               <div className="w-8 h-8 rounded-full bg-[#6c5bb9] flex items-center justify-center">
                 <span className="text-xs styrene-font-bold">CL</span>
@@ -525,7 +560,7 @@ function App() {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col tiempos-font text-[#f5f4ef] overflow-y-scroll bg-[#262624]">
+      <div className="flex-1 flex flex-col tiempos-font text-[#f5f4ef] overflow-y-scroll bg-[#262624] overflow-x-none">
         {/* Header */}
         {isMobile && (
             <button
@@ -548,10 +583,10 @@ function App() {
           {isMobile && (
           <p className={`absolute tiempos-font text-xl top-3 left-12 z-150 transition-all ${sidebarOverlayOpen ? 'opacity-100' : 'opacity-0'}`}>Scott Daly</p>
           )}
-        <div className='sticky top-0 z-[8] -mb-6 flex h-12 items-center gap-1 md:gap-3 pl-11 md:pb-0.5 md:pl-8 '>
+        <div className='sticky top-0 z-[8] -mb-6 flex h-12 items-center gap-1 lg:gap-3 pl-11 lg:pb-0.5 lg:pl-8 '>
           {/* Mobile sidebar toggle button inline with chat title */}
           
-          <div className="bg-gradient-to-b from-[#262624] via-[#262624] to-[#262624]/0 md:pl-6 md:pr-4 px-2 w-full z-[-1] -bottom-5 inset-0 via-50% absolute pointer-events-none"></div>
+          <div className="bg-gradient-to-b from-[#262624] via-[#262624] to-[#262624]/0 lg:pl-6 lg:pr-4 px-2 w-full z-[-1] -bottom-5 inset-0 via-50% absolute pointer-events-none"></div>
           <div className='flex items-center justify-between w-full'>
             <div className="flex-1 flex relative">
               {!isRenaming ? (
@@ -599,11 +634,11 @@ function App() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 mt-7 pl-10 text-[#f5f4ef] md:pr-10">
+        <div className="flex-1 mt-7 pl-5 lg:pl-10 text-[#f5f4ef] lg:pr-10">
           <div className="max-w-[45rem] mx-auto">
             {currentChat.messages.map((message) => (
-              <div key={message.id} className={`group relative ${
-                message.sender === 'user' ? 'mb-4 inline-flex flex-col break-words bg-[#141413] styrene-font max-w-[75ch] ml-px pl-2.5 py-2.5 pr-6 leading-6 rounded-xl text-[0.9375rem] shadow-[0_2px_16px_rgba(0,0,0,0.025)]' : 'mb-8 bg-gradient-to-b from-[#3C3C39]/75 to-[#30302E] pr-4 md:pr-8 leading-[1.65rem] tracking-[0.015em] pt-3.5 px-4 pb-[1.125rem] rounded-2xl border-[0.5px] border-[#5e5d59]/30 shadow-[0_4px_24px_rgba(0,0,0,0.015)]'
+              <div key={message.id} className={`group relative mr-4 lg:mr-0 ${
+                message.sender === 'user' ? 'mb-4 flex w-fit flex-col break-words bg-[#141413] styrene-font max-w-[75ch] ml-px pl-2.5 py-2.5 pr-6 leading-6 rounded-xl text-[0.9375rem] shadow-[0_2px_16px_rgba(0,0,0,0.025)]' : 'mb-8 bg-gradient-to-b from-[#3C3C39]/75 to-[#30302E] pr-4 lg:pr-8 leading-[1.65rem] tracking-[0.015em] pt-3.5 px-4 pb-[1.125rem] rounded-2xl border-[0.5px] border-[#5e5d59]/30 shadow-[0_4px_24px_rgba(0,0,0,0.015)]'
               }`}>
                 <div className="flex items-start space-x-2">
                   {message.sender === 'user' && (
@@ -620,7 +655,7 @@ function App() {
                   </div>
                 </div>
                 {message.sender === 'assistant' && (
-                      <div className={`absolute bottom-[-10] text-[#b8b5a9] transition-all duration-150 right-0 bg-[#3d3d3a] rounded-lg flex items-center gap-1 translate-x-2 shadow-sm border-[1px] border-[#5f5d59]/45 styrene-font text-xs p-1 ${currentChat.messages.length === (currentChat.messages.indexOf(message) + 1) ? "opacity-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"}` }>
+                      <div className={`absolute bottom-[-10] text-[#b8b5a9] transition-all duration-150 right-2 lg:right-0 bg-[#3d3d3a] rounded-lg flex items-center gap-1 translate-x-2 shadow-sm border-[1px] border-[#5f5d59]/45 styrene-font text-xs p-1 ${currentChat.messages.length === (currentChat.messages.indexOf(message) + 1) ? "opacity-100" : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"}` }>
                         <button className="px-1 py-0.5 rounded-md hover:bg-[#262624] flex items-center space-x-1.5 cursor-pointer">
                           <Clipboard className="w-3 h-3" />
                           <span>Copy</span>
@@ -653,7 +688,7 @@ function App() {
         </div>
 
         {/* Input Area */}
-        <div className="sticky bottom-0 mx-auto w-full pt-6 z-[5] min-w-0 md:pl-11 md:pr-9 max-w-[52rem]">
+        <div className="sticky bottom-0 mx-auto w-full pt-6 z-[5] min-w-0 pl-2 lg:pl-11  lg:pr-11 max-w-3xl lg:max-w-[52rem]">
           <div className="flex flex-col bg-[#30302e] border border-[#dfddd3]/30 outline-[#ae5630] focus-within:border-white  pl-4  pt-2.5  pr-2.5  pb-2.5 bottom-2 sm:mx-0  items-stretch  transition-all  duration-200  relative  shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/3.5%)]  focus-within:shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/7.5%)]  hover:border-border-200  focus-within:border-border-200  cursor-text  z-10 rounded-2xl">
             <div className="flex items-start justify-between rounded-lg">
               <textarea
