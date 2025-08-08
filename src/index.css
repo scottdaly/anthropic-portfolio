@@ -1,5 +1,138 @@
 @import "tailwindcss";
 
+/* Theme tokens (light by default) */
+:root {
+  /* always tokens */
+  --always-black: 0 0% 0%;
+  --always-white: 0 0% 100%;
+
+  /* light mode values */
+  --accent-brand: 15 63.1% 59.6%;
+  --accent-main-000: 15 55.6% 52.4%;
+  --accent-main-100: 15 55.6% 52.4%;
+  --accent-main-200: 15 63.1% 59.6%;
+  --accent-main-900: 0 0% 0%;
+  --accent-pro-000: 251 34.2% 33.3%;
+  --accent-pro-100: 251 40% 45.1%;
+  --accent-pro-200: 251 61% 72.2%;
+  --accent-pro-900: 253 33.3% 91.8%;
+  --accent-secondary-000: 210 73.7% 40.2%;
+  --accent-secondary-100: 210 70.9% 51.6%;
+  --accent-secondary-200: 210 70.9% 51.6%;
+  --accent-secondary-900: 211 72% 90%;
+  --bg-000: 0 0% 100%;
+  --bg-100: 48 33.3% 97.1%;
+  --bg-200: 53 28.6% 94.5%;
+  --bg-300: 48 25% 92.2%;
+  --bg-400: 50 20.7% 88.6%;
+  --bg-500: 50 20.7% 88.6%;
+  --border-100: 30 3.3% 11.8%;
+  --border-200: 30 3.3% 11.8%;
+  --border-300: 30 3.3% 11.8%;
+  --border-400: 30 3.3% 11.8%;
+  --danger-000: 0 61.4% 22.4%;
+  --danger-100: 0 58.6% 34.1%;
+  --danger-200: 0 58.6% 34.1%;
+  --danger-900: 0 50% 95%;
+  --oncolor-100: 0 0% 100%;
+  --oncolor-200: 60 6.7% 97.1%;
+  --oncolor-300: 60 6.7% 97.1%;
+  --text-000: 60 2.6% 7.6%;
+  --text-100: 60 2.6% 7.6%;
+  --text-200: 60 2.5% 23.3%;
+  --text-300: 60 2.5% 23.3%;
+  --text-400: 51 3.1% 43.7%;
+  --text-500: 51 3.1% 43.7%;
+}
+
+/* dark mode values (enabled by adding the `dark` class on html) */
+.dark {
+  --accent-brand: 15 63.1% 59.6%;
+  --accent-main-000: 15 55.6% 52.4%;
+  --accent-main-100: 15 63.1% 59.6%;
+  --accent-main-200: 15 63.1% 59.6%;
+  --accent-main-900: 0 0% 0%;
+  --accent-pro-000: 251 84.6% 74.5%;
+  --accent-pro-100: 251 40.2% 54.1%;
+  --accent-pro-200: 251 40% 45.1%;
+  --accent-pro-900: 250 25.3% 19.4%;
+  --accent-secondary-000: 210 71.1% 62%;
+  --accent-secondary-100: 210 70.9% 51.6%;
+  --accent-secondary-200: 210 70.9% 51.6%;
+  --accent-secondary-900: 210 55.9% 24.6%;
+  --bg-000: 60 2.1% 18.4%;
+  --bg-100: 60 2.7% 14.5%;
+  --bg-200: 30 3.3% 11.8%;
+  --bg-300: 60 2.6% 7.6%;
+  --bg-400: 60 3.4% 5.7%;
+  --bg-500: 60 3.4% 5.7%;
+  --border-100: 51 16.5% 84.5%;
+  --border-200: 51 16.5% 84.5%;
+  --border-300: 51 16.5% 84.5%;
+  --border-400: 51 16.5% 84.5%;
+  --danger-000: 0 73.1% 66.5%;
+  --danger-100: 0 58.6% 34.1%;
+  --danger-200: 0 58.6% 34.1%;
+  --danger-900: 0 23% 15.6%;
+  --oncolor-100: 0 0% 100%;
+  --oncolor-200: 60 6.7% 97.1%;
+  --oncolor-300: 60 6.7% 97.1%;
+  --text-000: 48 33.3% 97.1%;
+  --text-100: 48 33.3% 97.1%;
+  --text-200: 50 9% 73.7%;
+  --text-300: 50 9% 73.7%;
+  --text-400: 48 4.8% 59.2%;
+  --text-500: 48 4.8% 59.2%;
+}
+
+/* Map CSS variables into Tailwind theme tokens */
+@theme {
+  --color-accent-brand: hsl(var(--accent-brand));
+  --color-accent-main-000: hsl(var(--accent-main-000));
+  --color-accent-main-100: hsl(var(--accent-main-100));
+  --color-accent-main-200: hsl(var(--accent-main-200));
+  --color-accent-main-900: hsl(var(--accent-main-900));
+  --color-accent-pro-000: hsl(var(--accent-pro-000));
+  --color-accent-pro-100: hsl(var(--accent-pro-100));
+  --color-accent-pro-200: hsl(var(--accent-pro-200));
+  --color-accent-pro-900: hsl(var(--accent-pro-900));
+  --color-accent-secondary-000: hsl(var(--accent-secondary-000));
+  --color-accent-secondary-100: hsl(var(--accent-secondary-100));
+  --color-accent-secondary-200: hsl(var(--accent-secondary-200));
+  --color-accent-secondary-900: hsl(var(--accent-secondary-900));
+
+  --color-bg-000: hsl(var(--bg-000));
+  --color-bg-100: hsl(var(--bg-100));
+  --color-bg-200: hsl(var(--bg-200));
+  --color-bg-300: hsl(var(--bg-300));
+  --color-bg-400: hsl(var(--bg-400));
+  --color-bg-500: hsl(var(--bg-500));
+
+  --color-border-100: hsl(var(--border-100));
+  --color-border-200: hsl(var(--border-200));
+  --color-border-300: hsl(var(--border-300));
+  --color-border-400: hsl(var(--border-400));
+
+  --color-danger-000: hsl(var(--danger-000));
+  --color-danger-100: hsl(var(--danger-100));
+  --color-danger-200: hsl(var(--danger-200));
+  --color-danger-900: hsl(var(--danger-900));
+
+  --color-oncolor-100: hsl(var(--oncolor-100));
+  --color-oncolor-200: hsl(var(--oncolor-200));
+  --color-oncolor-300: hsl(var(--oncolor-300));
+
+  --color-text-000: hsl(var(--text-000));
+  --color-text-100: hsl(var(--text-100));
+  --color-text-200: hsl(var(--text-200));
+  --color-text-300: hsl(var(--text-300));
+  --color-text-400: hsl(var(--text-400));
+  --color-text-500: hsl(var(--text-500));
+
+  --color-always-black: hsl(var(--always-black));
+  --color-always-white: hsl(var(--always-white));
+}
+
 @font-face {
   font-family: 'Styrene A';
   src: url('/fonts/StyreneA-Regular.otf') format('opentype');
@@ -74,6 +207,7 @@
 
 body{
   scrollbar-color: #5e5d59cc transparent;
+  background-color: #262624;
 }
 
 button {
