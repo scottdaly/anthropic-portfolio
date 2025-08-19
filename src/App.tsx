@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ThumbsUp, ThumbsDown, Clipboard, RotateCcw, Plus, Check, Link, InfoIcon } from 'lucide-react';
+import { ChevronDown, Plus, Check, Link, InfoIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 // Mock data for chats
