@@ -214,6 +214,10 @@ button {
   cursor: pointer;
 }
 
+strong {
+  font-weight: 600;
+}
+
 .tiempos-font {
   font-family: 'Tiempos Text', serif;
 }

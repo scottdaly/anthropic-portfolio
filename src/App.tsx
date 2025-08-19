@@ -209,6 +209,7 @@ Bring me in and you'll get a designer who ships code, sweats systems, and treats
 function App() {
   const [showTitleMenu, setShowTitleMenu] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
+  const [showChatMenu, setShowChatMenu] = useState<number | null>(null);
   const [chats, setChats] = useState(initialChats);
   const [currentChat, setCurrentChat] = useState(chats[0]);
   const [isRenaming, setIsRenaming] = useState(false);
@@ -222,6 +223,7 @@ function App() {
   const [copied, setCopied] = useState(false);
   const titleMenuRef = useRef<HTMLDivElement>(null);
   const titleMenuBtnRef = useRef<HTMLButtonElement>(null);
+  const chatMenuRef = useRef<HTMLDivElement>(null);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarOverlayOpen, setSidebarOverlayOpen] = useState(false);
@@ -298,6 +300,24 @@ function App() {
     setShowTitleMenu(false);
   };
 
+  const handleChatRename = (chat: typeof currentChat) => {
+    setCurrentChat(chat);
+    setNewTitle(chat.title);
+    setIsRenaming(true);
+    setShowChatMenu(null);
+  };
+
+  const handleChatDelete = (chatId: number) => {
+    setShowChatMenu(null);
+    if (currentChat.id === chatId) {
+      setIsConfirmingDelete(true);
+    } else {
+      // Delete non-current chat directly
+      const updatedChats = chats.filter(chat => chat.id !== chatId);
+      setChats(updatedChats);
+    }
+  };
+
   const handleRenameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTitle.trim()) {
@@ -345,6 +365,21 @@ function App() {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showTitleMenu]);
+
+  // Close chat menu on outside click
+  useEffect(() => {
+    if (showChatMenu === null) return;
+    function handleClick(e: MouseEvent) {
+      if (
+        chatMenuRef.current &&
+        !chatMenuRef.current.contains(e.target as Node)
+      ) {
+        setShowChatMenu(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showChatMenu]);
 
   // Close share modal on outside click
   useEffect(() => {
@@ -446,16 +481,53 @@ function App() {
                 </div>
                 <div className="mt-1 space-y-0.5 px-1">
                   {chats.map((chat) => (
-                    <button
-                      key={chat.id}
-                      onClick={() => setCurrentChat(chat)}
-                      className={`w-full px-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
-                        currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
-                      }`}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
-                      <span className="truncate styrene-font">{chat.title}</span>
-                    </button>
+                    <div key={chat.id} className="relative group/chat">
+                      <button
+                        onClick={() => setCurrentChat(chat)}
+                        className={`w-full px-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
+                          currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
+                        }`}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35a80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
+                        <span className="truncate styrene-font flex-1 text-left group-hover/chat:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] group-focus-within/chat:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] [mask-size:100%_100%] [mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)]">{chat.title}</span>
+                      </button>
+                      
+                      {/* Ellipses button - shows on hover */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowChatMenu(showChatMenu === chat.id ? null : chat.id);
+                        }}
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-[#141413] transition-opacity duration-150 ${
+                          currentChat.id === chat.id ? 'opacity-100' : 'opacity-0 group-hover/chat:opacity-100'
+                        }`}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M144,128a16,16,0,1,1-16-16A16,16,0,0,1,144,128ZM60,112a16,16,0,1,0,16,16A16,16,0,0,0,60,112Zm136,0a16,16,0,1,0,16,16A16,16,0,0,0,196,112Z"></path>
+                        </svg>
+                      </button>
+
+                      {/* Chat menu */}
+                      {showChatMenu === chat.id && (
+                        <div
+                          ref={chatMenuRef}
+                          className="absolute z-[10] tracking-tight top-full right-2 min-w-[8rem] w-[128px] mt-1 styrene-font text-[#c2c0b6] bg-[#30302e] border-[1px] border-[#5f5d59]/50 backdrop-blur-xl rounded-lg p-1 overflow-hidden menu-shadow"
+                        >
+                          <button 
+                            className="w-full text-left px-2 py-1 hover:bg-[#151514]/70 rounded hover:cursor-pointer"
+                            onClick={() => handleChatRename(chat)}
+                          >
+                            Rename
+                          </button>
+                          <button 
+                            className="w-full text-left px-2 py-1 text-[#e86b6b] hover:bg-[#240e0d]/40 rounded hover:cursor-pointer"
+                            onClick={() => handleChatDelete(chat.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -477,7 +549,7 @@ function App() {
             height: '100vh',
             zIndex: 40,
           }}
-          className={` border-r-[1px] border-border-300/10 flex flex-col transition-colors duration-300 ease-in-out ${sidebarCollapsed ? 'bg-[#262624]' : 'bg-[#1f1e1d]'}`}
+          className={`border-r-[1px] border-border-300/10 flex flex-col transition-colors duration-300 ease-in-out ${sidebarCollapsed ? 'bg-[#262624]' : 'bg-[#1f1e1d]'}`}
         >
           <div className={`py-2 px-2 flex items-center justify-between transition-all duration-300 ease-in-out`}> 
             <div className={`flex items-center transition-all duration-300 ease-in-out pb-4`}> 
@@ -511,8 +583,8 @@ function App() {
           {(!isMobile || sidebarOverlayOpen) && (
             <div className="tracking-tight mx-2 transition-opacity duration-200 ease-in-out opacity-100">
               <div className="relative group">
-                <button className={`w-full hover:cursor-pointer text-left px-1 py-1.5 rounded-lg flex items-center space-x-1 text-[#d97757] gap-1 ${sidebarCollapsed ? '' : 'hover:bg-[#d97757]/5'}`}>
-                  <div className="flex items-center space-x-1 bg-[#c96442] rounded-full p-1 group-hover:scale-105 group-hover:rotate-3 transition-all ease-in-out group-hover:shadow-md duration-150">
+                <button className={`w-full can-focus hover:cursor-pointer text-left px-1 py-1.5 rounded-lg flex items-center space-x-1 text-[#d97757] gap-1 ${sidebarCollapsed ? '' : 'hover:bg-[#d97757]/5'}`}>
+                  <div className="flex items-center space-x-1 bg-[#c96442] rounded-full p-1 group-hover:scale-105 group-hover:-rotate-3 transition-all ease-in-out group-hover:shadow-md duration-150">
                     <Plus className="w-4 h-4 text-white" />
                   </div>
                   <span className={`text-[0.83rem] mt-1 styrene-font-medium whitespace-nowrap transition-all duration-150 ease-in-out ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>New chat</span>
@@ -529,18 +601,55 @@ function App() {
                 <div className="px-3 py-2 text-sm text-gray-400">
                   <span className='text-[#ceccc5] styrene-font text-xs'>Recents</span>
                 </div>
-                <div className="mt-1 space-y-0.5 px-1">
+                <div className="mt-1 space-y-0.5 pl-1">
                   {chats.map((chat) => (
-                    <button
-                      key={chat.id}
-                      onClick={() => setCurrentChat(chat)}
-                      className={`w-full px-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
-                        currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
-                      }`}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
-                      <span className="truncate styrene-font">{chat.title}</span>
-                    </button>
+                    <div key={chat.id} className="relative group/chat">
+                      <button
+                        onClick={() => setCurrentChat(chat)}
+                        className={`w-full p-2 py-2 text-[0.85rem] hover:bg-[#0f0f0e] text-[#c2c0b6] rounded-lg cursor-pointer flex items-center space-x-2 ${
+                          currentChat.id === chat.id ? 'bg-[#0f0f0e] text-[#faf9f5]' : ''
+                        }`}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="shrink-0"><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35a80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"></path></svg>
+                        <span className="truncate styrene-font flex-1 text-left group-hover/chat:text-text-100 group-hover/chat:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_70%,transparent_90%)] group-focus-within/chat:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] [mask-size:100%_100%]">{chat.title}</span>
+                      </button>
+                      
+                      {/* Ellipses button - shows on hover */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowChatMenu(showChatMenu === chat.id ? null : chat.id);
+                        }}
+                        className={`absolute right-0 top-1/2 -translate-y-1/2 p-2 text-text-300 rounded-md hover:text-text-100 hover:bg-bg-300 group-hover/chat:bg-bg-300 transition-opacity duration-150 ${
+                          currentChat.id === chat.id ? 'opacity-100 bg-[#0f0f0e]' : 'opacity-0 group-hover/chat:opacity-100'
+                        }`}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M144,128a16,16,0,1,1-16-16A16,16,0,0,1,144,128ZM60,112a16,16,0,1,0,16,16A16,16,0,0,0,60,112Zm136,0a16,16,0,1,0,16,16A16,16,0,0,0,196,112Z"></path>
+                        </svg>
+                      </button>
+
+                      {/* Chat menu */}
+                      {showChatMenu === chat.id && (
+                        <div
+                          ref={chatMenuRef}
+                          className="absolute z-[10] tracking-tight top-full right-2 min-w-[8rem] w-[128px] mt-1 styrene-font text-[#c2c0b6] bg-[#30302e] border-[1px] border-[#5f5d59]/50 backdrop-blur-xl rounded-lg p-1 overflow-hidden menu-shadow"
+                        >
+                          <button 
+                            className="w-full text-left px-2 py-1 hover:bg-[#151514]/70 rounded hover:cursor-pointer"
+                            onClick={() => handleChatRename(chat)}
+                          >
+                            Rename
+                          </button>
+                          <button 
+                            className="w-full text-left px-2 py-1 text-[#e86b6b] hover:bg-[#240e0d]/40 rounded hover:cursor-pointer"
+                            onClick={() => handleChatDelete(chat.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -661,7 +770,7 @@ function App() {
                   </div>
                   )}
                   <div className="flex-1 relative leading-[1.75rem]">
-                    <div className={`prose mt-1 prose-invert prose-p:my-2 prose-headings:my-4 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-strong:text-[#faf9f5] prose-em:text-[#faf9f5] prose-code:text-[#faf9f5] prose-code:bg-[#1f1e1d] prose-code:px-1 prose-code:py-0.5 prose-code:rounded ${message.sender === 'user' ? `text-[0.87rem] leading-[1.4rem]` : ''}`}>
+                    <div className={`prose mt-1 prose-invert prose-p:my-2 prose-headings:my-4 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-strong:text-[#faf9f5] prose-strong:font-semibold prose-em:text-[#faf9f5] prose-code:text-[#faf9f5] prose-code:bg-[#1f1e1d] prose-code:px-1 prose-code:py-0.5 prose-code:rounded ${message.sender === 'user' ? `text-[0.87rem] leading-[1.4rem]` : ''}`}>
                       <ReactMarkdown>{message.content}</ReactMarkdown>
                     </div>
                   </div>
@@ -910,30 +1019,30 @@ function App() {
         {/* Rename Modal */}
         {isRenaming && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 styrene-font">
-            <div className="bg-[#1f1e1d] rounded-2xl shadow-2xl border border-[#5f5d59]/80 max-w-md w-full p-6 relative flex flex-col">
-              <div className="text-xl tiempos-font mb-2">Rename chat</div>
+            <div className="bg-bg-100 rounded-2xl shadow-2xl border border-border-300/10 mx-4 max-w-md w-full p-4 md:p-6 relative flex flex-col">
+              <div className="text-[1.15rem] styrene-font font-medium tracking-tight mb-2.5">Rename chat</div>
               <form onSubmit={handleRenameSubmit} className="flex flex-col gap-5">
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="bg-[#30302e] text-gray-100 border border-[#5f5d59]/50 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600"
+                  className="bg-bg-000 h-9 text-[0.9rem] text-text-100 border border-border-300/15 hover:border-border-200/30 px-3 pt-2 pb-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#599ee3]/70 focus:ring-offset-2 focus:ring-offset-bg-100 transition-colors mb-1"
                   autoFocus
                 />
                 <div className="flex gap-2 justify-end">
                   <button
                     type="button"
                     onClick={handleRenameCancel}
-                    className="px-4 py-2 border border-[#5f5d59]/50 rounded-lg hover:bg-[#141413] hover:border-[#141413] text-sm tracking-tighter font-medium transition-colors duration-200"
+                    className="px-4 pb-1 pt-2 border border-[#5f5d59]/50 rounded-lg hover:bg-[#141413] hover:border-[#141413] text-[0.84rem] tracking-tighter font-medium transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#faf9f5] hover:opacity-90 opacity-100 text-[#141413] hover:scale-102 tracking-tighter font-medium rounded-lg text-sm transition-all
+                    className="px-4 py-2 bg-[#faf9f5] hover:opacity-90 opacity-100 text-[#141413] hover:scale-102 tracking-tighter font-medium rounded-lg text-[0.84rem] transition-all
         ease-[cubic-bezier(0.165,0.85,0.45,1)]
         duration-200
-         h-9 px-4 py-2 rounded-lg min-w-[5rem] whitespace-nowrap"
+         h-9 px-4 pb-1 pt-2 rounded-lg min-w-[5rem] whitespace-nowrap"
                   >
                     Save
                   </button>
@@ -946,14 +1055,14 @@ function App() {
         {/* Delete Confirmation Modal */}
         {isConfirmingDelete && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 styrene-font">
-            <div className="bg-[#1f1e1d] rounded-2xl shadow-2xl border border-[#5f5d59]/80 max-w-md w-full p-6 relative flex flex-col">
-              <div className="text-xl tiempos-font text-white">Delete chat?</div>
-              <div className="mb-5 text-[#c2c0b6]">Are you sure you want to delete this chat?</div>
+            <div className="bg-bg-100 mx-4 rounded-2xl shadow-2xl border-[0.5px] border-border-300/20 max-w-md w-full p-6 relative flex flex-col">
+              <div className="text-[1.12rem] font-medium styrene-font text-text-100 mb-1">Delete chat</div>
+              <div className="mb-6 text-[0.96rem] tracking-tight text-text-200">Are you sure you want to delete this chat?</div>
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
                   onClick={() => setIsConfirmingDelete(false)}
-                  className="px-4 py-2 border border-[#5f5d59]/50 rounded-lg hover:bg-[#141413] hover:border-[#141413] text-sm tracking-tighter font-medium transition-colors duration-200"
+                  className="px-4.5 pb-1.5 pt-2 border border-[#5f5d59]/50 rounded-lg hover:bg-[#141413] hover:border-[#141413] text-[0.84rem] tracking-tighter font-medium transition-colors duration-200"
                 >
                   Cancel
                 </button>
@@ -973,7 +1082,7 @@ function App() {
                     }
                     setIsConfirmingDelete(false);
                   }}
-                  className="px-4 py-2 bg-[#8a2424] hover:opacity-95 hover:scale-102 text-white rounded-lg text-sm tracking-tighter font-medium transition-all duration-200"
+                  className="px-4.5 pb-1.5 pt-2 bg-danger-200 hover:opacity-95 hover:scale-102 text-oncolor-100 rounded-lg text-[0.84rem] tracking-tight transition-all duration-200"
                 >
                   Delete
                 </button>
